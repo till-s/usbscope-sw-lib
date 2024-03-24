@@ -1,0 +1,60 @@
+#include <FWComm.hpp>
+#include <PGA.hpp>
+#include <ad8370Sup.h>
+#include <math.h>
+#include <string>
+
+using std::string;
+
+class PGAAD8370 : public PGA, public FWRef {
+public:
+	PGAAD8370( FWPtr fwp )
+	: FWRef( fwp )
+	{
+	}
+
+	virtual void
+	getDBRange(int *min, int *max);
+
+	virtual void
+	setDBAtt(unsigned channel, float att);
+
+	virtual float
+	getDBAtt(unsigned channel);
+};
+
+static void
+checkRes(int st, const char *where)
+{
+	if ( st < 0 ) {
+			if ( -2 == st ) {
+				throw std::invalid_argument(string("PGAAD8370::") + where + " -- invalid channel or attenuation");
+			}
+			throw FWCommIOError( string("PGAAD8370::") + where );
+	}
+}
+
+
+void
+PGAAD8370::getDBRange(int *min, int *max)
+{
+	if ( min ) *min = 0;
+	if ( max ) *max = 40;
+}
+
+void
+PGAAD8370::setDBAtt(unsigned channel, float att)
+{
+	int rv = ad8370SetAtt( (*this)->fw_, channel, att );
+	checkRes( rv, "setDBAtt()" );
+}
+
+float
+PGAAD8370::getDBAtt(unsigned channel)
+{
+	float rv = ad8370GetAtt( (*this)->fw_, channel );
+	if ( isnan( rv ) ) {
+		throw std::runtime_error( "ad8370GetAtt() failed" );
+	}
+	return rv;
+}

@@ -21,10 +21,10 @@ typedef std::shared_ptr<FWComm> FWPtr;
 
 class FWComm {
 private:
-	std::mutex  mtx_;
-	unsigned    boardVersion_;
-	unsigned    APIVersion_;
-	unsigned    FWVersion_;
+	std::recursive_mutex  mtx_;
+	unsigned              boardVersion_;
+	unsigned              APIVersion_;
+	unsigned              FWVersion_;
 
 	FWComm(const FWComm &)    = delete;
 
@@ -94,18 +94,19 @@ public:
 	class Guard {
 	private:
 		FWRef *r_;
+	
+		Guard(const Guard &)             = delete;
+		Guard & operator=(const Guard &) = delete;
+
+	public:
+
 		Guard(FWRef *r)
 		: r_(r)
 		{
 			printf("lock\n");
 			r_->fwp_->lock();
 		}
-		
-		Guard(const Guard &)             = delete;
-		Guard & operator=(const Guard &) = delete;
-
-	public:
-
+	
 		FWComm *
 		operator->()
 		{

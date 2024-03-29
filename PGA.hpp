@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include <FWComm.hpp>
+
 class PGA {
 public:
 	virtual void
@@ -10,4 +13,7 @@ public:
 
 	virtual float
 	getDBAtt(unsigned channel) = 0;
+
+	static std::shared_ptr<PGA>
+	create(FWPtr fw);
 };

@@ -2,7 +2,7 @@
 #include <PGAAD8370.hpp>
 #include <PGALmh6882.hpp>
 
-std::shared_ptr<PGA>
+PGAPtr
 PGA::create(FWPtr fw)
 {
 	switch ( fw->getBoardVersion() ) {

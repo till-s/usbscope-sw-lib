@@ -3,6 +3,9 @@
 #include <memory>
 #include <FWComm.hpp>
 
+class PGA;
+typedef std::shared_ptr<PGA> PGAPtr;
+
 class PGA {
 public:
 	virtual void
@@ -14,6 +17,6 @@ public:
 	virtual float
 	getDBAtt(unsigned channel) = 0;
 
-	static std::shared_ptr<PGA>
+	static PGAPtr
 	create(FWPtr fw);
 };

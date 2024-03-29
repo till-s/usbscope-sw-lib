@@ -5,10 +5,14 @@
 PGAPtr
 PGA::create(FWPtr fw)
 {
+	PGAPtr rv;
 	switch ( fw->getBoardVersion() ) {
 		case 1:
-			return std::make_shared<PGAAD8370> ( fw );
+			rv = std::make_shared<PGAAD8370> ( fw );
+			break;
 		default:
-			return std::make_shared<PGALmh6882>( fw );
+			rv = std::make_shared<PGALmh6882>( fw );
+			break;
 	}
+	return rv;
 }

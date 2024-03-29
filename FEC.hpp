@@ -66,7 +66,7 @@ public:
 		throw std::runtime_error("Front-End has no DAC range controls");
 	}
 
-	virtual bool getDACRangeHi(int channel, bool on)
+	virtual bool getDACRangeHi(int channel)
 	{
 		throw std::runtime_error("Front-End has no DAC range controls");
 	}

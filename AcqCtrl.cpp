@@ -5,7 +5,9 @@
 using std::string;
 
 AcqCtrl::AcqCtrl( FWPtr fwp )
-: FWRef( fwp ), bufsz_(0)
+: FWRef ( fwp ),
+  bufsz_( buf_get_size( (*this)->fw_ )  ),
+  buffl_( buf_get_flags( (*this)->fw_ ) )
 {
 }
 
@@ -173,4 +175,28 @@ AcqCtrl::setScale(double scl)
 	int32_t iscl = round( scl * ldexp(1.0, 30) );
 	int     st   = acq_set_scale( (*this)->fw_, 0, 0, iscl );
 	checkStat( st, __func__ );
+}
+
+unsigned
+AcqCtrl::getBufSampleSize()
+{
+	return (buffl_ & FW_BUF_FLG_16B) ? 2 : 1;
+}
+
+void
+AcqCtrl::flushBuf()
+{
+	int st;
+	if ( (st = buf_flush( (*this)->fw_ ) ) < 0 ) {
+		checkStat( st, __func__ );
+	}
+}
+
+void
+AcqCtrl::readBuf(uint16_t *hdr, uint8_t *buf, size_t len)
+{
+	int st;
+	if ( (st = buf_read( (*this)->fw_, hdr, buf, len ) ) < 0 ) {
+		checkStat( st, __func__ );
+	}
 }

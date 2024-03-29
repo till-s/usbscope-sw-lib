@@ -1,5 +1,10 @@
 #include <TCA6408FEC.hpp>
 
+TCA6408FEC::TCA6408FEC(FWPtr fw)
+: I2CFEC( fw, 0x20 )
+{
+}
+
 void
 TCA6408FEC::init()
 {

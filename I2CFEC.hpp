@@ -22,19 +22,19 @@ public:
 	virtual bool getBit(int channel, int bit);
 	virtual void setBit(int channel, int bit, int val);
 
-	virtual void setAttenuator(int channel, bool on);
+	virtual void setAttenuator(int channel, bool on) override;
 
-	virtual bool getAttenuator(int channel);
+	virtual bool getAttenuator(int channel) override;
 
-	virtual void setTermination(int channel, bool on);
+	virtual void setTermination(int channel, bool on) override;
 
-	virtual bool getTermination(int channel);
+	virtual bool getTermination(int channel) override;
 
-	virtual void setACMode(int channel, bool on);
+	virtual void setACMode(int channel, bool on) override;
 
-	virtual bool getACMode(int channel);
+	virtual bool getACMode(int channel) override;
 
-	virtual void setDacRangeHi(int channel, bool on);
+	virtual void setDACRangeHi(int channel, bool on) override;
 
-	virtual bool getDacRangeHi(int channel);
+	virtual bool getDACRangeHi(int channel) override;
 };

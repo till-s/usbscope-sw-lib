@@ -25,14 +25,12 @@ FWComm::~FWComm()
 void
 FWComm::lock()
 {
-	printf("Lock\n");
 	mtx_.lock();
 }
 
 void
 FWComm::unlock()
 {
-	printf("Unlock\n");
 	mtx_.unlock();
 }
 

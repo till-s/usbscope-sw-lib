@@ -103,7 +103,6 @@ public:
 		Guard(FWRef *r)
 		: r_(r)
 		{
-			printf("lock\n");
 			r_->fwp_->lock();
 		}
 	
@@ -121,7 +120,6 @@ public:
 
 		~Guard()
 		{
-			printf("unlock\n");
 			r_->fwp_->unlock();
 		}
 

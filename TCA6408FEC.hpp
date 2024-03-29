@@ -13,11 +13,11 @@ public:
 
 	virtual void setAllOutputs() override;
 
-	virtual int hasACModeCtl(int channel);
+	virtual int hasACModeCtl(int channel) override;
 
-	virtual int hasAttenuatorCtl(int channel);
+	virtual int hasAttenuatorCtl(int channel) override;
 
-	virtual int hasDACRangeCtl(int channel);
+	virtual int hasDACRangeCtl(int channel) override;
 
-	virtual int hasTerminationCtl(int channel);
+	virtual int hasTerminationCtl(int channel) override;
 };

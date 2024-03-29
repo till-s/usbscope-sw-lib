@@ -6,12 +6,12 @@ public:
 
 	virtual void init();
 
-	virtual unsigned getOutReg(int channel)
+	virtual unsigned getOutReg(int channel) override
 	{
 		return 0x01;
 	}
 
-	virtual void setAllOutputs();
+	virtual void setAllOutputs() override;
 
 	virtual int hasACModeCtl(int channel);
 

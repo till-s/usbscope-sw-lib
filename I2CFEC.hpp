@@ -17,7 +17,7 @@ public:
 	}
 
 	virtual unsigned getOutReg(int channel) = 0;
-	virtual void     allOutputs()           = 0;
+	virtual void     setAllOutputs()        = 0;
 
 	virtual bool getBit(int channel, int bit);
 	virtual void setBit(int channel, int bit, int val);

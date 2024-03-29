@@ -1,27 +1,9 @@
-#include <FWComm.hpp>
-#include <PGA.hpp>
+#include <PGAAD8370.hpp>
 #include <ad8370Sup.h>
 #include <math.h>
 #include <string>
 
 using std::string;
-
-class PGAAD8370 : public PGA, public FWRef {
-public:
-	PGAAD8370( FWPtr fwp )
-	: FWRef( fwp )
-	{
-	}
-
-	virtual void
-	getDBRange(int *min, int *max);
-
-	virtual void
-	setDBAtt(unsigned channel, float att);
-
-	virtual float
-	getDBAtt(unsigned channel);
-};
 
 static void
 checkRes(int st, const char *where)

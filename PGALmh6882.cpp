@@ -1,26 +1,8 @@
-#include <FWComm.hpp>
-#include <PGA.hpp>
 #include <lmh6882Sup.h>
+#include <PGALmh6882.hpp>
 #include <string>
 
 using std::string;
-
-class PGALmh6882 : public PGA, public FWRef {
-public:
-	PGALmh6882( FWPtr fwp )
-	: FWRef( fwp )
-	{
-	}
-
-	virtual void
-	getDBRange(int *min, int *max);
-
-	virtual void
-	setDBAtt(unsigned channel, float att);
-
-	virtual float
-	getDBAtt(unsigned channel);
-};
 
 static void
 checkRes(float st, const char *where)

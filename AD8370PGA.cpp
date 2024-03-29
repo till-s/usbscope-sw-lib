@@ -1,4 +1,4 @@
-#include <PGAAD8370.hpp>
+#include <AD8370PGA.hpp>
 #include <ad8370Sup.h>
 #include <math.h>
 #include <string>

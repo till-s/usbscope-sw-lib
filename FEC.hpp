@@ -1,6 +1,12 @@
 #pragma once
 
 #include <stdexcept>
+#include <memory>
+#include <FWComm.hpp>
+
+class FEC;
+
+typedef std::shared_ptr<FEC> FECPtr;
 
 class FEC {
 public:
@@ -72,4 +78,7 @@ public:
 	virtual ~FEC()
 	{
 	}
+
+	static FECPtr
+	create( FWPtr );
 };

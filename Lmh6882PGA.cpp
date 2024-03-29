@@ -1,5 +1,5 @@
 #include <lmh6882Sup.h>
-#include <PGALmh6882.hpp>
+#include <Lmh6882PGA.hpp>
 #include <string>
 
 using std::string;

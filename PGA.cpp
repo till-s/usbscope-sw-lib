@@ -1,6 +1,6 @@
 #include <PGA.hpp>
-#include <PGAAD8370.hpp>
-#include <PGALmh6882.hpp>
+#include <AD8370PGA.hpp>
+#include <Lmh6882PGA.hpp>
 
 PGAPtr
 PGA::create(FWPtr fw)

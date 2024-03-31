@@ -72,9 +72,8 @@ AcqCtrl::getNSamples()
 unsigned long
 AcqCtrl::getMaxNSamples()
 {
-	return getBufSize() / 2 / getBufSampleSize();
+	return bufsz_;
 }
-
 
 void
 AcqCtrl::setNSamples(unsigned n)
@@ -182,12 +181,6 @@ AcqCtrl::setScale(double scl)
 	int32_t iscl = round( scl * ldexp(1.0, 30) );
 	int     st   = acq_set_scale( (*this)->fw_, 0, 0, iscl );
 	checkStat( st, __func__ );
-}
-
-unsigned long
-AcqCtrl::getBufSize()
-{
-	return bufsz_;
 }
 
 unsigned

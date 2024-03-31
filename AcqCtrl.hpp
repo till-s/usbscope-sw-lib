@@ -56,9 +56,6 @@ public:
 	virtual void
 	setScale(double);
 
-	virtual unsigned long
-	getBufSize();
-
 	virtual unsigned
 	getBufSampleSize();
 

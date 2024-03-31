@@ -26,6 +26,9 @@ public:
 	virtual unsigned
 	getNSamples();
 
+	virtual unsigned long
+	getMaxNSamples();
+
 	virtual void
 	setNSamples(unsigned);
 
@@ -62,8 +65,14 @@ public:
 	virtual void
 	flushBuf();
 
-	virtual void
+	virtual unsigned
 	readBuf(uint16_t *hdr, uint8_t *buf, size_t len);
+
+	virtual unsigned
+	readBuf(uint16_t *hdr, float   *buf, size_t len);
+
+	virtual int
+	getIrqFD(unsigned mask);
 
 	static bool
 	bufHdrFlagOverrange(uint16_t hdr, unsigned ch)

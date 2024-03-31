@@ -69,6 +69,13 @@ AcqCtrl::getNSamples()
 	return p.nsamples;
 }
 
+unsigned long
+AcqCtrl::getMaxNSamples()
+{
+	return getBufSize() / 2 / getBufSampleSize();
+}
+
+
 void
 AcqCtrl::setNSamples(unsigned n)
 {
@@ -177,6 +184,12 @@ AcqCtrl::setScale(double scl)
 	checkStat( st, __func__ );
 }
 
+unsigned long
+AcqCtrl::getBufSize()
+{
+	return bufsz_;
+}
+
 unsigned
 AcqCtrl::getBufSampleSize()
 {
@@ -192,11 +205,29 @@ AcqCtrl::flushBuf()
 	}
 }
 
-void
+unsigned
 AcqCtrl::readBuf(uint16_t *hdr, uint8_t *buf, size_t len)
 {
 	int st;
 	if ( (st = buf_read( (*this)->fw_, hdr, buf, len ) ) < 0 ) {
 		checkStat( st, __func__ );
 	}
+	return st;
 }
+
+unsigned
+AcqCtrl::readBuf(uint16_t *hdr, float *buf, size_t len)
+{
+	int st;
+	if ( (st = buf_read_flt( (*this)->fw_, hdr, buf, len ) ) < 0 ) {
+		checkStat( st, __func__ );
+	}
+	return st;
+}
+
+int
+AcqCtrl::getIrqFD(unsigned mask)
+{
+	return -1;
+}
+

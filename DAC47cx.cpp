@@ -1,41 +1,8 @@
-#include <SlowDAC.hpp>
+#include <DAC47cx.hpp>
 #include <dac47cxSup.h>
 #include <string>
 
 using std::string;
-
-class DAC47cx : public SlowDAC, public FWRef {
-public:
-	DAC47cx( FWPtr fwp )
-	: FWRef( fwp )
-	{
-	}
-
-	virtual void
-	reset();
-
-	virtual void
-	init();
-
-	virtual void
-	getVoltRange( float *vmin, float *vmax );
-
-	virtual void
-	setTicks(int channel, int ticks);
-
-	virtual int
-	getTicks(int channel);
-
-	virtual void
-	setVolt(int channel, float volt);
-
-	virtual float
-	getVolt(int channel);
-
-	virtual void
-	setRefInternalX1();
-};
-
 static void
 checkRes(int st, const char *where)
 {
@@ -53,13 +20,6 @@ DAC47cx::reset()
 	if ( dac47cxReset( (*this)->fw_ ) ) {
 		throw FWCommIOError( "DAC47xx::reset()" );
 	}
-}
-
-void
-DAC47cx::init()
-{
-	reset();
-	setRefInternalX1();
 }
 
 void

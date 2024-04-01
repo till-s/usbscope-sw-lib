@@ -12,9 +12,6 @@ public:
 	virtual double
 	getFreq() = 0;
 
-	virtual void
-	init()    = 0;
-
 	virtual ~ADCClk() {}
 
 	static ADCClkPtr create( FWPtr );

@@ -6,18 +6,6 @@ TCA6408FEC::TCA6408FEC(FWPtr fw)
 }
 
 void
-TCA6408FEC::init()
-{
-	for (int ch = 0; ch < 2; ch++ ) {
-		setTermination( ch, false );
-		setAttenuator ( ch, true  );
-		setACMode     ( ch, false );
-		setDACRangeHi ( ch, true  );
-	}
-	setAllOutputs();
-}
-
-void
 TCA6408FEC::setAllOutputs()
 {
 	writeReg( getSla(), 0x03, 0x00 );

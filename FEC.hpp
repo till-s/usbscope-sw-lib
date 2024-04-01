@@ -71,10 +71,6 @@ public:
 		throw std::runtime_error("Front-End has no DAC range controls");
 	}
 
-	virtual void init()
-	{
-	}
-
 	virtual ~FEC()
 	{
 	}

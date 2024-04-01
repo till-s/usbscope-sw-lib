@@ -11,11 +11,11 @@ public:
 	}
 
 	virtual void
-	getDBRange(int *min, int *max);
+	getDBRange(int *min, int *max) override;
 
 	virtual void
-	setDBAtt(unsigned channel, float att);
+	setDBAtt(unsigned channel, float att) override;
 
 	virtual float
-	getDBAtt(unsigned channel);
+	getDBAtt(unsigned channel) override;
 };

@@ -4,8 +4,6 @@ class TCA6408FEC : public I2CFEC {
 public:
 	TCA6408FEC( FWPtr fwp );
 
-	virtual void init();
-
 	virtual unsigned getOutReg(int channel) override
 	{
 		return 0x01;

@@ -11,11 +11,27 @@ class LED {
 public:
 	virtual bool getVal(const std::string &name)           = 0;
 	virtual void setVal(const std::string &name, bool val) = 0;
+
 	virtual ~LED()
 	{
 	}
 
-	virtual void test() = 0;
-
 	static LEDPtr create(FWPtr);
+};
+
+class LEDNone : public LED {
+public:
+	LEDNone()
+	{
+	}
+
+	virtual bool getVal(const std::string &name) override
+	{
+		return false;
+	}
+
+	virtual void setVal(const std::string &name, bool val) override
+	{
+	}
+
 };

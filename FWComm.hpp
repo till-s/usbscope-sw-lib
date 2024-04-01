@@ -127,7 +127,7 @@ public:
 	};
 
 	FWPtr
-	unlocked()
+	unlockedPtr()
 	{
 		return fwp_;
 	}

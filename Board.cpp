@@ -290,7 +290,7 @@ Board::hwInit(bool force)
 	ADCInit();
 }
 
-Board::Board( FWPtr fwp )
+Board::Board( FWPtr fwp, bool sim )
 : FWRef   ( fwp                             ),
   acq_    ( fwp                             ),
   adcClk_ ( ADCClk::create          ( fwp ) ),
@@ -298,7 +298,34 @@ Board::Board( FWPtr fwp )
   leds_   ( LED::create             ( fwp ) ),
   fec_    ( FEC::create             ( fwp ) ),
   dac_    ( SlowDAC::create         ( fwp ) ),
-  adc_    ( make_shared<Max195xxADC>( fwp ) )
+  adc_    ( make_shared<Max195xxADC>( fwp ) ),
+  sim_    ( sim                             )
 {
-	hwInit( false );
+	if ( ! simulation() ) {
+		hwInit( false );
+	}
+	double dfltScl = 0.075;
+	if ( 1 == (*this)->getBoardVersion() ) {
+		dfltScl = 0.0075;
+	}
+	for ( int i = 0; i < NumChannels; i++ ) {
+		vVoltScale_.push_back( dfltScl );
+	}
+}
+
+void
+Board::setVoltScale(int channel, double scl)
+{
+	if ( channel < 0 || channel >= NumChannels ) {
+		throw std::invalid_argument( "channel # out of range " );
+	}
+	vVoltScale_[channel] = scl;
+}
+double
+Board::getVoltScale(int channel)
+{
+	if ( channel < 0 || channel >= NumChannels ) {
+		throw std::invalid_argument( "channel # out of range " );
+	}
+	return vVoltScale_[channel];
 }

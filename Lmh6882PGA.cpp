@@ -19,8 +19,8 @@ checkRes(float st, const char *where)
 void
 PGALmh6882::getDBRange(int *min, int *max)
 {
-	if ( min ) *min = 0;
-	if ( max ) *max = 0;
+	if ( min ) *min = 0.0;
+	if ( max ) *max = 20.0;
 }
 
 void

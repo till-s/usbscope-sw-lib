@@ -321,6 +321,7 @@ Board::setVoltScale(int channel, double scl)
 	}
 	vVoltScale_[channel] = scl;
 }
+
 double
 Board::getVoltScale(int channel)
 {

@@ -143,7 +143,7 @@ AcqCtrl::getTriggerSrc(TriggerSource *src, bool *edg)
 void
 AcqCtrl::setTriggerSrc(TriggerSource  src, bool  rising)
 {
-	int st = acq_set_source( (*this)->fw_, src, rising );
+	int st = acq_set_source( (*this)->fw_, src, rising ? 1 : -1 );
 	checkStat( st, __func__ );
 }
 

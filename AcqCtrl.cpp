@@ -224,3 +224,18 @@ AcqCtrl::getIrqFD(unsigned mask)
 	return -1;
 }
 
+bool
+AcqCtrl::getExtTrigOutEnable()
+{
+	AcqParams p;
+	xfer( NULL, &p );
+	return p.trigOutEn;
+}
+
+void
+AcqCtrl::setExtTrigOutEnable(bool enabled)
+{
+	// automatically disabled if trigger source is set to EXT (in FW)
+	int       st = acq_set_trig_out_en( (*this)->fw_, enabled );
+	checkStat(st, __func__ );
+}

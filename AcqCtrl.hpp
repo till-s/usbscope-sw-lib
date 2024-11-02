@@ -44,6 +44,12 @@ public:
 	virtual void
 	setTriggerSrc(TriggerSource  src, bool  rising);
 
+	virtual bool
+	getExtTrigOutEnable();
+
+	virtual void
+	setExtTrigOutEnable(bool enabled);
+
 	virtual int
 	getAutoTimeoutMS();
 

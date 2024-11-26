@@ -72,3 +72,31 @@ Max195xxADC::setMuxedModeB()
 	// muxed/DDR mode on port B
 	writeReg( 1, 0x06 );
 }
+
+void
+Max195xxADC::setMuxedModeA()
+{
+	// muxed/DDR mode on port A
+	writeReg( 1, 0x02 );
+}
+
+bool
+Max195xxADC::getClkTermination()
+{
+	int st;
+	if ( (st = max195xxGetClkTermination( (*this)->fw_ )) < 0 ) {
+		throw FWCommIOError( "Max195xxADC::getClkTermination()" );
+	}
+	return !!st;
+}
+
+void
+Max195xxADC::enableClkTermination(bool on)
+{
+	int st;
+	if ( (st = max195xxEnableClkTermination( (*this)->fw_, on )) < 0 ) {
+		throw FWCommIOError( "Max195xxADC::enableClkTermination()" );
+	}
+}
+
+

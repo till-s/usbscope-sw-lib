@@ -32,4 +32,15 @@ public:
 
 	virtual void
 	setMuxedModeB();
+
+	virtual void
+	setMuxedModeA();
+
+	// RETURN: on/off
+	virtual bool
+	getClkTermination();
+
+	// 100Ohm diff. Clk termination enable
+	virtual void
+	enableClkTermination(bool on);
 };

@@ -20,18 +20,33 @@ public:
 BrdClk::BrdClk( FWPtr fwp )
 : VersaClk( fwp )
 {
-	if ( 0 == (*this)->getBoardVersion() ) {
-		outMap_["EXT"]  = {1, OUT_CMOS, SLEW_100, LEVEL_18};
-		outMap_["ADC"]  = {2, OUT_CMOS, SLEW_100, LEVEL_18};
-		outMap_["FPGA"] = {4, OUT_CMOS, SLEW_100, LEVEL_18};
-		fRef_           = 25.0e6;
-		fADC_           = 130.0e6;
-	} else {
-		outMap_["EXT"]  = {2, OUT_CMOS, SLEW_100, LEVEL_18};
-		outMap_["ADC"]  = {3, OUT_LVDS, SLEW_100, LEVEL_18};
-		outMap_["FPGA"] = {1, OUT_CMOS, SLEW_100, LEVEL_18};
-		fRef_           = 26.0e6;
-		fADC_           = 120.0e6;
+	int vers = (*this)->getBoardVersion();
+	switch ( vers ) {
+		case 0:
+			outMap_["EXT"]  = {1, OUT_CMOS, SLEW_100, LEVEL_18};
+			outMap_["ADC"]  = {2, OUT_CMOS, SLEW_100, LEVEL_18};
+			outMap_["FPGA"] = {4, OUT_CMOS, SLEW_100, LEVEL_18};
+			fRef_           = 25.0e6;
+			fADC_           = 130.0e6;
+			break;
+		case 1:
+			outMap_["EXT"]  = {2, OUT_CMOS, SLEW_100, LEVEL_18};
+			outMap_["ADC"]  = {3, OUT_LVDS, SLEW_100, LEVEL_18};
+			outMap_["FPGA"] = {1, OUT_CMOS, SLEW_100, LEVEL_18};
+			outMap_["FOD1"] = outMap_["FPGA"];
+			fRef_           = 26.0e6;
+			fADC_           = 120.0e6;
+			break;
+		case 2:
+			outMap_["EXT"]  = {2, OUT_CMOS, SLEW_100, LEVEL_33};
+			outMap_["ADC"]  = {3, OUT_LVDS, SLEW_100, LEVEL_33};
+			outMap_["FOD1"] = {1, OUT_CMOS, SLEW_100, LEVEL_33};
+			// FPGA is clocked by REF out
+			fRef_           = 25.0e6;
+			fADC_           = 130.0e6;
+			break;
+		default:
+			throw std::runtime_error("Unsupported board version");
 	}
 }
 
@@ -47,10 +62,17 @@ BrdClk::init()
 	}
 	double fVCO   = fRef_ * getFBDiv();
 	double outDiv = fVCO / fADC_ / 2.0;
-	setOutDiv( outMap_["ADC"].output, outDiv );
-	setOutDiv( outMap_["EXT"].output, 4095.0 );
-	setFODRoute( outMap_["ADC"].output, NORMAL );
-	setFODRoute( outMap_["EXT"].output, CASC_FOD );
+	setOutDiv( outMap_.at("ADC").output, outDiv );
+	// 1kHz at EXT output
+	try {
+		outDiv = fVCO / 1.0E6 / 2.0;
+		setOutDiv( outMap_.at("FOD1").output, outDiv );
+	} catch ( std::out_of_range &e ) {
+		// has no FOD1 defined
+	}
+	setOutDiv( outMap_.at("EXT").output, 1000.0 );
+	setFODRoute( outMap_.at("ADC").output, NORMAL );
+	setFODRoute( outMap_.at("EXT").output, CASC_FOD );
 }
 
 ADCClkPtr
@@ -65,6 +87,7 @@ FEC::create( FWPtr fwp )
 	FECPtr rv;
 	switch ( fwp->getBoardVersion() ) {
 		case 1:
+		case 2:
 			{
 			auto fec = make_shared<TCA6408FEC>( fwp );
 			fec->setAllOutputs();
@@ -181,6 +204,7 @@ PGA::create(FWPtr fw)
 	PGAPtr rv;
 	switch ( fw->getBoardVersion() ) {
 		case 1:
+		case 2:
 			rv = std::make_shared<PGAAD8370> ( fw );
 			break;
 		default:
@@ -239,9 +263,10 @@ Board::ADCInit()
 	if ( ! adc_->dllLocked() ) {
 		throw std::runtime_error("ADC DLL not locking -- no clock?");
 	}
-	adc_->setMuxedModeB();
-	switch( (*this)->getBoardVersion() ) {
+	int boardVers = (*this)->getBoardVersion();
+	switch( boardVers ) {
 		case 0:
+			adc_->setMuxedModeB();
 			// Empirically found setting for the prototype board
 			adc_->setTiming( -1, 3 );
 			// set common-mode voltage (also important for PGA output)
@@ -268,11 +293,21 @@ Board::ADCInit()
 			//
 			adc_->setCMVolt( Max195xxCMVolt::CM_1050mV, Max195xxCMVolt::CM_1050mV );
 			break;
-		default:
 		case 1:
+			adc_->setMuxedModeB();
+			// Empirically found setting for the prototype board
 			// on artix board with constraints the 'nominal' settings
 			// seem much better
 			adc_->setTiming( 0, 0 );
+			adc_->enableClkTermination( true );
+			break;
+		case 2:
+            // Default timing seems fine
+			adc_->setMuxedModeA();
+			adc_->enableClkTermination( true );
+			break;
+		default:
+			fprintf(stderr,"WARNING: ADC not initialized; unsupported board version %d\n", boardVers);
 			break;
 	}
 }
@@ -306,7 +341,7 @@ Board::Board( FWPtr fwp, bool sim )
 	}
 	double dfltScl = 0.075;
 	if ( 1 == (*this)->getBoardVersion() ) {
-		dfltScl = 0.0075;
+		dfltScl = 0.0098; // empirical
 	}
 	for ( int i = 0; i < NumChannels; i++ ) {
 		vVoltScale_.push_back( dfltScl );

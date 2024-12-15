@@ -70,7 +70,8 @@ BrdClk::init()
 	} catch ( std::out_of_range &e ) {
 		// has no FOD1 defined
 	}
-	setOutDiv( outMap_.at("EXT").output, 1000.0 );
+	// divides by 2*OUT_DIV
+	setOutDiv( outMap_.at("EXT").output, 1000.0/2.0 );
 	setFODRoute( outMap_.at("ADC").output, NORMAL );
 	setFODRoute( outMap_.at("EXT").output, CASC_FOD );
 }

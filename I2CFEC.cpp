@@ -67,12 +67,12 @@ I2CFEC::getACMode(int channel)
 void
 I2CFEC::setDACRangeHi(int channel, bool on)
 {
-	setBit( channel, hasDACRangeCtl( channel ), on );
+	setBit( channel, hasDACRangeCtl( channel ), ! on );
 }
 
 bool
 I2CFEC::getDACRangeHi(int channel)
 {
-	return getBit( channel, hasDACRangeCtl( channel ) );
+	return ! getBit( channel, hasDACRangeCtl( channel ) );
 }
 

@@ -192,7 +192,8 @@ LEDv1::map_({
 LEDPtr
 LED::create(FWPtr fwp)
 {
-	if ( 1 == fwp->getBoardVersion() ) {
+	unsigned boardVersion = fwp->getBoardVersion();
+	if ( 1 == boardVersion || 2 == boardVersion ) {
 		return make_shared<LEDv1>( fwp );
 	} else {
 		return std::make_shared<LEDNone>();

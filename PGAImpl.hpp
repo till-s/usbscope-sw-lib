@@ -1,14 +1,10 @@
 #pragma once
 
 #include <PGA.hpp>
-#include <FWComm.hpp>
 
-class PGALmh6882 : public PGA, public FWRef {
+class PGAImpl : public PGA, public FWRef {
 public:
-	PGALmh6882( FWPtr fwp )
-	: FWRef( fwp )
-	{
-	}
+	PGAImpl( FWPtr fwp );
 
 	virtual void
 	getDBRange(int *min, int *max) override;

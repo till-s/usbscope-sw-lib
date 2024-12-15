@@ -1,8 +1,7 @@
 #include <Board.hpp>
 #include <VersaClk.hpp>
 #include <TCA6408FEC.hpp>
-#include <AD8370PGA.hpp>
-#include <Lmh6882PGA.hpp>
+#include <PGAImpl.hpp>
 #include <Max195xxADC.hpp>
 #include <DAC47cx.hpp>
 
@@ -203,17 +202,7 @@ LED::create(FWPtr fwp)
 PGAPtr
 PGA::create(FWPtr fw)
 {
-	PGAPtr rv;
-	switch ( fw->getBoardVersion() ) {
-		case 1:
-		case 2:
-			rv = std::make_shared<PGAAD8370> ( fw );
-			break;
-		default:
-			rv = std::make_shared<PGALmh6882>( fw );
-			break;
-	}
-	return rv;
+	return std::make_shared<PGAImpl>( fw );
 }
 
 void

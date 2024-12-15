@@ -341,9 +341,12 @@ Board::Board( FWPtr fwp, bool sim )
 	if ( ! simulation() ) {
 		hwInit( false );
 	}
-	double dfltScl = 0.075;
-	if ( 1 == (*this)->getBoardVersion() ) {
+	double   dfltScl   = 0.075;
+	unsigned boardVers = (*this)->getBoardVersion();
+	if        ( 1 == boardVers ) {
 		dfltScl = 0.0098; // empirical
+	} else if ( 2 == boardVers ) {
+		dfltScl = 0.0102; // empirical
 	}
 	for ( int i = 0; i < NumChannels; i++ ) {
 		vVoltScale_.push_back( dfltScl );

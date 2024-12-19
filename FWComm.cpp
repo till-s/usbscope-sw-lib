@@ -37,15 +37,5 @@ FWComm::unlock()
 std::string
 FWComm::what(int fwErr)
 {
-	switch ( fwErr ) {
-		case FW_CMD_ERR_TIMEOUT:
-			return "Timeout";
-		case FW_CMD_ERR_NOTSUP:
-			return "Unsupported command";
-		case FW_CMD_ERR_INVALID:
-			return "Invalid arguments";
-		case FW_CMD_ERR: /* fall through */
-		default:
-			return "Unspecified error";
-	}
+	return strerror( - fwErr );
 }

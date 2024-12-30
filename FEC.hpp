@@ -8,68 +8,32 @@ class FEC;
 
 typedef std::shared_ptr<FEC> FECPtr;
 
-class FEC {
+class FEC : public FWRef {
+
+	double min_, max_;
+
+	FEC( const FEC & )       = delete;
+
+	FEC &
+	operator=( const FEC & ) = delete;
 public:
+	FEC( FWPtr fwp );
 
-	virtual int hasACModeCtl(int channel)
-	{
-		throw std::runtime_error("Front-End has no AC-coupling controller switch");
-	}
+	virtual void setAttenuator(int channel, bool on);
 
-	virtual int hasAttenuatorCtl(int channel)
-	{
-		throw std::runtime_error("Front-End has no Attenuator controls");
-	}
+	virtual bool getAttenuator(int channel);
 
-	virtual int hasDACRangeCtl(int channel)
-	{
-		throw std::runtime_error("Front-End has no DAC range controls");
-	}
+	virtual void setTermination(int channel, bool on);
 
-	virtual int hasTerminationCtl(int channel)
-	{
-		throw std::runtime_error("Front-End has no Termination controls");
-	}
+	virtual bool getTermination(int channel);
 
-	virtual void setAttenuator(int channel, bool on)
-	{
-		throw std::runtime_error("Front-End has no Attenuator controls");
-	}
+	virtual void setACMode(int channel, bool on);
 
-	virtual bool getAttenuator(int channel)
-	{
-		throw std::runtime_error("Front-End has no Attenuator controls");
-	}
+	virtual bool getACMode(int channel);
 
-	virtual void setTermination(int channel, bool on)
-	{
-		throw std::runtime_error("Front-End has no Termination controls");
-	}
+	virtual void setDACRangeHi(int channel, bool on);
 
-	virtual bool getTermination(int channel)
-	{
-		throw std::runtime_error("Front-End has no Termination controls");
-	}
-
-	virtual void setACMode(int channel, bool on)
-	{
-		throw std::runtime_error("Front-End has no AC-coupling controller switch");
-	}
-
-	virtual bool getACMode(int channel)
-	{
-		throw std::runtime_error("Front-End has no AC-coupling controller switch");
-	}
-
-	virtual void setDACRangeHi(int channel, bool on)
-	{
-		throw std::runtime_error("Front-End has no DAC range controls");
-	}
-
-	virtual bool getDACRangeHi(int channel)
-	{
-		throw std::runtime_error("Front-End has no DAC range controls");
-	}
+	virtual bool getDACRangeHi(int channel);
 
 	virtual ~FEC()
 	{

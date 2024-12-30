@@ -1,104 +1,27 @@
 #include <Board.hpp>
 #include <VersaClk.hpp>
-#include <TCA6408FEC.hpp>
+#include <FEC.hpp>
 #include <PGAImpl.hpp>
 #include <Max195xxADC.hpp>
 #include <DAC47cx.hpp>
+
+#include <scopeInit.h>
+#include <string.h>
 
 using std::make_shared;
 using std::map;
 using std::string;
 
-class BrdClk : public VersaClk {
-public:
-	BrdClk( FWPtr fwp );
-
-	virtual void init();
-};
-
-BrdClk::BrdClk( FWPtr fwp )
-: VersaClk( fwp )
-{
-	int vers = (*this)->getBoardVersion();
-	switch ( vers ) {
-		case 0:
-			outMap_["EXT"]  = {1, OUT_CMOS, SLEW_100, LEVEL_18};
-			outMap_["ADC"]  = {2, OUT_CMOS, SLEW_100, LEVEL_18};
-			outMap_["FPGA"] = {4, OUT_CMOS, SLEW_100, LEVEL_18};
-			fRef_           = 25.0e6;
-			fADC_           = 130.0e6;
-			break;
-		case 1:
-			outMap_["EXT"]  = {2, OUT_CMOS, SLEW_100, LEVEL_18};
-			outMap_["ADC"]  = {3, OUT_LVDS, SLEW_100, LEVEL_18};
-			outMap_["FPGA"] = {1, OUT_CMOS, SLEW_100, LEVEL_18};
-			outMap_["FOD1"] = outMap_["FPGA"];
-			fRef_           = 26.0e6;
-			fADC_           = 120.0e6;
-			break;
-		case 2:
-			outMap_["EXT"]  = {2, OUT_CMOS, SLEW_100, LEVEL_33};
-			outMap_["ADC"]  = {3, OUT_LVDS, SLEW_100, LEVEL_33};
-			outMap_["FOD1"] = {1, OUT_CMOS, SLEW_100, LEVEL_33};
-			// FPGA is clocked by REF out
-			fRef_           = 25.0e6;
-			fADC_           = 130.0e6;
-			break;
-		default:
-			throw std::runtime_error("Unsupported board version");
-	}
-}
-
-void
-BrdClk::init()
-{
-	auto it  = outMap_.cbegin();
-	auto ite = outMap_.cend();
-	while ( it != ite ) {
-		int st = versaClkSetOutCfg( (*this)->fw_, it->second.output, it->second.iostd, it->second.slew, it->second.level );
-		checkStatus( st, "setOutCfg()" );
-		it++;
-	}
-	double fVCO   = fRef_ * getFBDiv();
-	double outDiv = fVCO / fADC_ / 2.0;
-	setOutDiv( outMap_.at("ADC").output, outDiv );
-	// 1kHz at EXT output
-	try {
-		outDiv = fVCO / 1.0E6 / 2.0;
-		setOutDiv( outMap_.at("FOD1").output, outDiv );
-	} catch ( std::out_of_range &e ) {
-		// has no FOD1 defined
-	}
-	// divides by 2*OUT_DIV
-	setOutDiv( outMap_.at("EXT").output, 1000.0/2.0 );
-	setFODRoute( outMap_.at("ADC").output, NORMAL );
-	setFODRoute( outMap_.at("EXT").output, CASC_FOD );
-}
-
 ADCClkPtr
 ADCClk::create( FWPtr fwp )
 {
-	return make_shared<BrdClk>( fwp );
+	return make_shared<VersaClk>( fwp );
 }
 
 FECPtr
 FEC::create( FWPtr fwp )
 {
-	FECPtr rv;
-	switch ( fwp->getBoardVersion() ) {
-		case 1:
-		case 2:
-			{
-			auto fec = make_shared<TCA6408FEC>( fwp );
-			fec->setAllOutputs();
-			rv = fec;
-			}
-			break;
-		default:
-			rv = make_shared<FEC>();
-			break;
-	}
-	return rv;
+	return make_shared<FEC>( fwp );
 }
 
 typedef map<const string,unsigned> LedMap;
@@ -205,35 +128,6 @@ PGA::create(FWPtr fw)
 	return std::make_shared<PGAImpl>( fw );
 }
 
-void
-Board::FECInit()
-{
-	// FEC may not be available or have partial support...
-	for (int ch = 0; ch < NumChannels; ch++ ) {
-		try { fec_->setTermination( ch, false ); }
-			catch ( std::runtime_error &e ) {}
-		try { fec_->setAttenuator ( ch, true  ); }
-			catch ( std::runtime_error &e ) {}
-		try { fec_->setACMode     ( ch, false ); }
-			catch ( std::runtime_error &e ) {}
-		try { fec_->setDACRangeHi ( ch, true  ); }
-			catch ( std::runtime_error &e ) {}
-	}
-}
-
-void
-Board::DACInit()
-{
-	dac_->reset();
-	std::static_pointer_cast<DAC47cx>( dac_ )->setRefInternalX1();
-}
-
-void
-Board::CLKInit()
-{
-	std::static_pointer_cast<BrdClk>( adcClk_ )->init();
-}
-
 SlowDACPtr
 SlowDAC::create( FWPtr fwp )
 {
@@ -241,79 +135,12 @@ SlowDAC::create( FWPtr fwp )
 }
 
 void
-Board::ADCInit()
-{
-	struct timespec per;
-	per.tv_sec  = 0;
-	per.tv_nsec = 200*1000*1000;
-	// sleep a little bit to let clock stabilize
-	nanosleep( &per, NULL );
-	adc_->reset();
-	// sleep a little bit to let DLL lock
-	nanosleep( &per, NULL );
-	if ( ! adc_->dllLocked() ) {
-		throw std::runtime_error("ADC DLL not locking -- no clock?");
-	}
-	int boardVers = (*this)->getBoardVersion();
-	switch( boardVers ) {
-		case 0:
-			adc_->setMuxedModeB();
-			// Empirically found setting for the prototype board
-			adc_->setTiming( -1, 3 );
-			// set common-mode voltage (also important for PGA output)
-			//
-			// ADC: common mode input voltage range 0.4..1.4V
-			// ADC: controls common mode voltage of PGA
-			// PGA: output common mode voltage: 2*OCM
-			// Resistive divider 232/(232+178)
-			//
-			// PGA VOCM = 2*ADC_VCM
-			//
-			// Valid range for PGA: 2..3V (2.5V best)
-			//
-			// Common-mode register 8:
-			//   bit 6..4, 2..0:
-			//         000       -> 0.9 V
-			//         001       -> 1.05V
-			//         010       -> 1.2V
-			//
-			// With 1.2V -> VOCM of PGA becomes 2.4V   (near optimum)
-			//           -> VICM of ADC becomes 1.358V (close to max)
-			// With 1.05 -> VOCM of PGA becomes 2.1V   (close to min)
-			//           -> VICM of ADC becomes 1.188V (OK)
-			//
-			adc_->setCMVolt( Max195xxCMVolt::CM_1050mV, Max195xxCMVolt::CM_1050mV );
-			break;
-		case 1:
-			adc_->setMuxedModeB();
-			// Empirically found setting for the prototype board
-			// on artix board with constraints the 'nominal' settings
-			// seem much better
-			adc_->setTiming( 0, 0 );
-			adc_->enableClkTermination( true );
-			break;
-		case 2:
-            // Default timing seems fine
-			adc_->setMuxedModeA();
-			adc_->enableClkTermination( true );
-			break;
-		default:
-			fprintf(stderr,"WARNING: ADC not initialized; unsupported board version %d\n", boardVers);
-			break;
-	}
-}
-
-void
 Board::hwInit(bool force)
 {
-	if ( adc_->dllLocked() and not force ) {
-		// assume board is already initialized
-		return;
+	int st;
+	if ( (st = scopeInit( (*this)->fw_, force )) < 0 ) {
+		throw std::runtime_error( std::string("scopeInit failed: ") + strerror(-st));
 	}
-	CLKInit();
-	FECInit();
-	DACInit();
-	ADCInit();
 }
 
 Board::Board( FWPtr fwp, bool sim )

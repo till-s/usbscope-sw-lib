@@ -98,5 +98,3 @@ Max195xxADC::enableClkTermination(bool on)
 		throw FWCommIOError( "Max195xxADC::enableClkTermination()" );
 	}
 }
-
-

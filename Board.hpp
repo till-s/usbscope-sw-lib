@@ -48,11 +48,5 @@ public:
 
 	void
 	setVoltScale(int channel, double scl);
-
-protected:
-	void CLKInit();
-	void ADCInit();
-	void FECInit();
-	void DACInit();
 };
 

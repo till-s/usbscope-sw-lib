@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-class VersaClk : public ADCClk, public FWRef {
+class VersaClk : public FWRef {
 	typedef struct OutCfg {
 		int              output;
 		VersaClkOutMode  iostd;
@@ -16,8 +16,6 @@ class VersaClk : public ADCClk, public FWRef {
 
 protected:
 
-	double                        fRef_;
-	double                        fADC_;
 	std::map<std::string, OutCfg> outMap_;
 
 	static void
@@ -25,12 +23,6 @@ protected:
 
 public:
 	VersaClk( FWPtr fwp );
-
-	virtual double
-	getFreq() override
-	{
-		return fADC_;
-	}
 
 	virtual double
 	getFBDiv();

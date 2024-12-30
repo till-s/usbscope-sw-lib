@@ -8,7 +8,7 @@ using std::map;
 using std::string;
 
 VersaClk::VersaClk( FWPtr fwp )
-: FWRef( fwp ), fADC_( 0.0 )
+: FWRef( fwp )
 {
 }
 

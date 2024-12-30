@@ -12,10 +12,20 @@ using std::make_shared;
 using std::map;
 using std::string;
 
+class BoardADCClk : public FWRef, public ADCClk {
+public:
+	BoardADCClk( FWPtr fwp ) : FWRef( fwp ) {}
+
+	virtual double getFreq() override
+	{
+		return buf_get_sampling_freq( (*this)->fw_ );
+	}
+};
+
 ADCClkPtr
 ADCClk::create( FWPtr fwp )
 {
-	return make_shared<VersaClk>( fwp );
+	return make_shared<BoardADCClk>( fwp );
 }
 
 FECPtr

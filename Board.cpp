@@ -22,6 +22,27 @@ public:
 	}
 };
 
+class BoardDAC : public BoardRef, public SlowDAC  {
+public:
+	BoardDAC( BoardInterface *brd )
+	: BoardRef( brd )
+	{
+	}
+
+	// DAC interface
+	virtual void
+	resetDAC() override;
+
+	virtual void
+	getVoltsRange( double *vmin, double *vmax ) override;
+
+	virtual void
+	setVolts(int channel, double volt) override;
+
+	virtual double
+	getVolts(int channel) override;
+};
+
 ADCClkPtr
 ADCClk::create( BoardInterface *brd )
 {
@@ -162,7 +183,7 @@ Board::Board( FWPtr fwp, bool sim )
   pga_                ( PGA::create             ( this )      ),
   leds_               ( LED::create             ( fwp  )      ),
   fec_                ( FEC::create             ( this )      ),
-  dac_                ( SlowDAC::create         ( fwp  )      ),
+  dac_                ( make_shared<BoardDAC>   ( this )      ),
   adc_                ( make_shared<Max195xxADC>( fwp  )      ),
   sim_                ( sim                                   )
 {
@@ -198,4 +219,39 @@ Board::getVoltScale(int channel)
 		throw std::invalid_argument( "channel # out of range " );
 	}
 	return vVoltScale_[channel];
+}
+
+// DAC interface
+void
+BoardDAC::resetDAC()
+{
+	throw std::runtime_error("Board::resetDAC(): Not supported");
+}
+
+void
+BoardDAC::getVoltsRange( double *vmin, double *vmax )
+{
+	if ( dacGetVoltsRange( (*this)->scope(), vmin, vmax ) < 0 ) {
+		throw std::runtime_error("Board::getVoltsRange: dacGetVoltsRange() failed");
+	}
+}
+
+void
+BoardDAC::setVolts(int channel, double volt)
+{
+int st;
+	if ( (st = dacSetVolts( (*this)->scope(), channel, volt )) < 0 ) {
+		throw std::runtime_error(string("Board::setVolts: Error - ") + strerror(-st));
+	}
+}
+
+double
+BoardDAC::getVolts(int channel)
+{
+int st;
+double volt;
+	if ( (st = dacGetVolts( (*this)->scope(), channel, &volt )) < 0 ) {
+		throw std::runtime_error(string("Board::getVolts: Error - ") + strerror(-st));
+	}
+	return volt;
 }

@@ -11,22 +11,22 @@ public:
 	}
 
 	virtual void
-	reset() override;
+	resetDAC() override;
 
 	virtual void
-	getVoltRange( float *vmin, float *vmax ) override;
+	getVoltsRange( double *vmin, double *vmax ) override;
 
 	virtual void
-	setTicks(int channel, int ticks) override;
+	setTicks(int channel, int ticks);
 
 	virtual int
-	getTicks(int channel) override;
+	getTicks(int channel);
 
 	virtual void
-	setVolt(int channel, float volt) override;
+	setVolts(int channel, double volt) override;
 
-	virtual float
-	getVolt(int channel) override;
+	virtual double
+	getVolts(int channel) override;
 
 	virtual void
 	setRefInternalX1();

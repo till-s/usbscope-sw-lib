@@ -15,7 +15,7 @@ checkRes(int st, const char *where)
 }
 
 void
-DAC47cx::reset()
+DAC47cx::resetDAC()
 {
 	if ( dac47cxReset( (*this)->fw_ ) ) {
 		throw FWCommIOError( "DAC47xx::reset()" );
@@ -23,9 +23,17 @@ DAC47cx::reset()
 }
 
 void
-DAC47cx::getVoltRange( float *vmin, float *vmax )
+DAC47cx::getVoltsRange( double *pvmin, double *pvmax )
 {
-	dac47cxGetRange( (*this)->fw_, NULL, NULL, vmin, vmax );
+	float vmin, vmax;
+
+	dac47cxGetRange( (*this)->fw_, NULL, NULL, &vmin, &vmax );
+	if ( pvmin ) {
+		*pvmin = (double)vmin;
+	}
+	if ( pvmax ) {
+		*pvmax = (double)vmax;
+	}
 }
 
 void
@@ -45,19 +53,19 @@ DAC47cx::getTicks(int channel)
 }
 
 void
-DAC47cx::setVolt(int channel, float volt)
+DAC47cx::setVolts(int channel, double volt)
 {
-	int st = dac47cxSetVolt( (*this)->fw_, channel, volt );
+	int st = dac47cxSetVolt( (*this)->fw_, channel, (float)volt );
 	checkRes( st, "setVolt()" );
 }
 
-float
-DAC47cx::getVolt(int channel)
+double
+DAC47cx::getVolts(int channel)
 {
 	float volt;
 	int st = dac47cxGetVolt( (*this)->fw_, channel, &volt );
 	checkRes( st, "getVolt()" );
-	return volt;
+	return (double)volt;
 }
 
 void

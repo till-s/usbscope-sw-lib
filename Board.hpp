@@ -1,4 +1,7 @@
 #pragma once
+#include <memory>
+#include <vector>
+#include <stdexcept>
 
 #include <FWComm.hpp>
 #include <LED.hpp>
@@ -7,8 +10,6 @@
 #include <ADCClk.hpp>
 #include <AcqCtrl.hpp>
 #include <SlowDAC.hpp>
-#include <memory>
-#include <vector>
 #include <BoardRef.hpp>
 
 class Max195xxADC;
@@ -39,7 +40,7 @@ public:
 
 	static const int NumChannels = 2;
 
-	Board( FWPtr fwp, bool sim = false );
+	Board(FWPtr fwp, bool sim = false );
 
 	bool simulation() const
 	{

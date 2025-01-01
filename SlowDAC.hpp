@@ -11,22 +11,16 @@ class SlowDAC {
 public:
 
 	virtual void
-	reset()  = 0;
+	resetDAC()  = 0;
 
 	virtual void
-	getVoltRange( float *vmin, float *vmax ) = 0;
+	getVoltsRange( double *vmin, double *vmax ) = 0;
 
 	virtual void
-	setTicks(int channel, int ticks) = 0;
+	setVolts(int channel, double volt) = 0;
 
-	virtual int
-	getTicks(int channel) = 0;
-
-	virtual void
-	setVolt(int channel, float volt) = 0;
-
-	virtual float
-	getVolt(int channel) = 0;
+	virtual double
+	getVolts(int channel) = 0;
 
 	static SlowDACPtr
 	create( FWPtr fwp );

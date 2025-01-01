@@ -7,6 +7,8 @@ class ADCClk;
 
 typedef std::shared_ptr<ADCClk> ADCClkPtr;
 
+class BoardInterface;
+
 class ADCClk {
 public:
 	virtual double
@@ -14,5 +16,5 @@ public:
 
 	virtual ~ADCClk() {}
 
-	static ADCClkPtr create( FWPtr );
+	static ADCClkPtr create( BoardInterface * );
 };

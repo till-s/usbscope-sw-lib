@@ -5,6 +5,7 @@
 
 class PGA;
 typedef std::shared_ptr<PGA> PGAPtr;
+class BoardInterface;
 
 class PGA {
 public:
@@ -18,5 +19,5 @@ public:
 	getDBAtt(unsigned channel) = 0;
 
 	static PGAPtr
-	create(FWPtr fw);
+	create(BoardInterface *);
 };

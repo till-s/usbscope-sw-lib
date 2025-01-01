@@ -3,12 +3,14 @@
 #include <stdexcept>
 #include <memory>
 #include <FWComm.hpp>
+#include <BoardRef.hpp>
 
 class FEC;
+class Board;
 
 typedef std::shared_ptr<FEC> FECPtr;
 
-class FEC : public FWRef {
+class FEC : public BoardRef {
 
 	double min_, max_;
 
@@ -17,7 +19,7 @@ class FEC : public FWRef {
 	FEC &
 	operator=( const FEC & ) = delete;
 public:
-	FEC( FWPtr fwp );
+	FEC( BoardInterface * );
 
 	virtual void setAttenuator(int channel, bool on);
 
@@ -40,5 +42,5 @@ public:
 	}
 
 	static FECPtr
-	create( FWPtr );
+	create( BoardInterface * );
 };

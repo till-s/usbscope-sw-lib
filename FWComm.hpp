@@ -61,9 +61,6 @@ public:
 		return FWVersion_;
 	}
 
-
-	void hello() { printf("hello\n"); }
-
 	FWInfo *
 	operator*()
 	{
@@ -80,56 +77,51 @@ public:
 	what(int fwErr);
 };
 
-class FWRef {
+template <typename PT>
+class LockedRef {
 private:
-	FWPtr fwp_;
+	PT ptr_;
 
 public:
 
-	FWRef(FWPtr fwp)
-	: fwp_(fwp)
+	LockedRef(PT ptr)
+	: ptr_(ptr)
 	{
 	}
 
 	class Guard {
 	private:
-		FWRef *r_;
+		LockedRef<PT> *r_;
 	
 		Guard(const Guard &)             = delete;
 		Guard & operator=(const Guard &) = delete;
 
 	public:
 
-		Guard(FWRef *r)
+		Guard(LockedRef<PT> *r)
 		: r_(r)
 		{
-			r_->fwp_->lock();
+			r_->ptr_->lock();
 		}
 	
-		FWComm *
+		PT
 		operator->()
 		{
-			return r_->fwp_.get();
-		}
-
-		FWInfo *
-		operator*()
-		{
-			return **(r_->fwp_.get());
+			return r_->ptr_;//.get();
 		}
 
 		~Guard()
 		{
-			r_->fwp_->unlock();
+			r_->ptr_->unlock();
 		}
 
-		friend class FWRef;
+		friend class LockedRef<PT>;
 	};
 
-	FWPtr
+	PT
 	unlockedPtr()
 	{
-		return fwp_;
+		return ptr_;
 	}
 
 	Guard
@@ -144,3 +136,5 @@ public:
 		return Guard(this);
 	}
 };
+
+typedef LockedRef<std::shared_ptr<FWComm>> FWRef;

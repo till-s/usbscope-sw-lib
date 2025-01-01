@@ -1,12 +1,14 @@
 #pragma once
 
 #include <FWComm.hpp>
+#include <BoardRef.hpp>
+#include <scopeSup.h>
 
-class AcqCtrl : public FWRef {
+class AcqCtrl : public BoardRef {
 	unsigned bufsz_;
 	unsigned buffl_;
 public:
-	AcqCtrl( FWPtr );
+	AcqCtrl( BoardInterface * );
 
 	virtual void
 	xfer( AcqParams *set, AcqParams *get );

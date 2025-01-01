@@ -5,33 +5,33 @@
 #include <Max195xxADC.hpp>
 #include <DAC47cx.hpp>
 
-#include <scopeInit.h>
+#include <scopeSup.h>
 #include <string.h>
 
 using std::make_shared;
 using std::map;
 using std::string;
 
-class BoardADCClk : public FWRef, public ADCClk {
+class BoardADCClk : public BoardRef, public ADCClk {
 public:
-	BoardADCClk( FWPtr fwp ) : FWRef( fwp ) {}
+	BoardADCClk( BoardInterface *brd ) : BoardRef( brd ) {}
 
 	virtual double getFreq() override
 	{
-		return buf_get_sampling_freq( (*this)->fw_ );
+		return buf_get_sampling_freq( (*this)->scope() );
 	}
 };
 
 ADCClkPtr
-ADCClk::create( FWPtr fwp )
+ADCClk::create( BoardInterface *brd )
 {
-	return make_shared<BoardADCClk>( fwp );
+	return make_shared<BoardADCClk>( brd );
 }
 
 FECPtr
-FEC::create( FWPtr fwp )
+FEC::create( BoardInterface *brd )
 {
-	return make_shared<FEC>( fwp );
+	return make_shared<FEC>( brd );
 }
 
 typedef map<const string,unsigned> LedMap;
@@ -133,9 +133,9 @@ LED::create(FWPtr fwp)
 }
 
 PGAPtr
-PGA::create(FWPtr fw)
+PGA::create(BoardInterface *brd)
 {
-	return std::make_shared<PGAImpl>( fw );
+	return std::make_shared<PGAImpl>( brd );
 }
 
 SlowDACPtr
@@ -148,27 +148,30 @@ void
 Board::hwInit(bool force)
 {
 	int st;
-	if ( (st = scopeInit( (*this)->fw_, force )) < 0 ) {
+	if ( (st = scope_init( (*this)->scope(), force )) < 0 ) {
 		throw std::runtime_error( std::string("scopeInit failed: ") + strerror(-st));
 	}
 }
 
 Board::Board( FWPtr fwp, bool sim )
-: FWRef   ( fwp                             ),
-  acq_    ( fwp                             ),
-  adcClk_ ( ADCClk::create          ( fwp ) ),
-  pga_    ( PGA::create             ( fwp ) ),
-  leds_   ( LED::create             ( fwp ) ),
-  fec_    ( FEC::create             ( fwp ) ),
-  dac_    ( SlowDAC::create         ( fwp ) ),
-  adc_    ( make_shared<Max195xxADC>( fwp ) ),
-  sim_    ( sim                             )
+// Create a temporary FWRef to lock; Board is not constructed yet!
+: BoardInterface      ( fwp, scope_open( (*FWRef(fwp))->fw_ ) ),
+  BoardRef            ( this                                  ),
+  acq_                ( this                                  ),
+  adcClk_             ( ADCClk::create          ( this )      ),
+  pga_                ( PGA::create             ( this )      ),
+  leds_               ( LED::create             ( fwp  )      ),
+  fec_                ( FEC::create             ( this )      ),
+  dac_                ( SlowDAC::create         ( fwp  )      ),
+  adc_                ( make_shared<Max195xxADC>( fwp  )      ),
+  sim_                ( sim                                   )
 {
 	if ( ! simulation() ) {
 		hwInit( false );
 	}
 	double   dfltScl   = 0.075;
-	unsigned boardVers = (*this)->getBoardVersion();
+	FWRef fwRef( fwp_ );
+	unsigned boardVers = (*fwRef)->getBoardVersion();
 	if        ( 1 == boardVers ) {
 		dfltScl = 0.0098; // empirical
 	} else if ( 2 == boardVers ) {

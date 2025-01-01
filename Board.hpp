@@ -9,12 +9,17 @@
 #include <SlowDAC.hpp>
 #include <memory>
 #include <vector>
+#include <BoardRef.hpp>
 
 class Max195xxADC;
 
 typedef std::shared_ptr<Max195xxADC> ADCPtr;
 
-class Board : public FWRef {
+class Board;
+
+struct ScopePvt;
+
+class Board : public BoardInterface, public BoardRef {
 protected:
 	AcqCtrl                    acq_;
 	ADCClkPtr                  adcClk_;
@@ -40,6 +45,9 @@ public:
 	{
 		return sim_;
 	}
+
+	void lock();
+	void unlock();
 
 	void hwInit(bool force);
 

@@ -1,6 +1,7 @@
 #include <PGAImpl.hpp>
 #include <math.h>
 #include <string>
+#include <scopeSup.h>
 
 using std::string;
 
@@ -15,8 +16,8 @@ checkRes(int st, const char *where)
 	}
 }
 
-PGAImpl::PGAImpl( FWPtr fwp )
-: FWRef( fwp )
+PGAImpl::PGAImpl( BoardInterface *brd )
+: BoardRef( brd )
 {
 }
 
@@ -24,7 +25,7 @@ void
 PGAImpl::getDBRange(int *min, int *max)
 {
 	double attMin, attMax;
-	int rv = pgaGetAttRange( (*this)->fw_, &attMin, &attMax );
+	int rv = pgaGetAttRange( (*this)->scope(), &attMin, &attMax );
 
 	checkRes( rv, "getDBRange()" );
 	if ( min ) *min = round( attMin );
@@ -34,7 +35,7 @@ PGAImpl::getDBRange(int *min, int *max)
 void
 PGAImpl::setDBAtt(unsigned channel, float att)
 {
-	int rv = pgaSetAtt( (*this)->fw_, channel, att );
+	int rv = pgaSetAtt( (*this)->scope(), channel, att );
 	checkRes( rv, "setDBAtt()" );
 }
 
@@ -42,7 +43,7 @@ float
 PGAImpl::getDBAtt(unsigned channel)
 {
 	double att;
-	int   rv = pgaGetAtt( (*this)->fw_, channel, &att );
+	int   rv = pgaGetAtt( (*this)->scope(), channel, &att );
 	checkRes( rv, "getDBAtt()" );
 	return att;
 }

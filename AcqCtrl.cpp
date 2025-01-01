@@ -4,10 +4,10 @@
 
 using std::string;
 
-AcqCtrl::AcqCtrl( FWPtr fwp )
-: FWRef ( fwp ),
-  bufsz_( buf_get_size( (*this)->fw_ )  ),
-  buffl_( buf_get_flags( (*this)->fw_ ) )
+AcqCtrl::AcqCtrl( BoardInterface *brd )
+: BoardRef ( brd ),
+  bufsz_   ( buf_get_size( (*this)->scope() )  ),
+  buffl_   ( buf_get_flags( (*this)->scope() ) )
 {
 }
 
@@ -22,7 +22,7 @@ checkStat(int st, const char *where)
 void
 AcqCtrl::xfer(AcqParams *set, AcqParams *get)
 {
-	int st = acq_set_params( (*this)->fw_, set, get );
+	int st = acq_set_params( (*this)->scope(), set, get );
 	checkStat(st, __func__ );
 }
 
@@ -42,7 +42,7 @@ AcqCtrl::setTriggerLevelPercent(double lvl)
 		throw std::invalid_argument( "AcqCtrl::setTriggerLevelPercent()" );
 	}
 	int16_t    l = round( 32767.0 * lvl/100.0 );
-	int       st = acq_set_level( (*this)->fw_, l, 1000 );
+	int       st = acq_set_level( (*this)->scope(), l, 1000 );
 	checkStat(st, __func__ );
 }
 
@@ -57,7 +57,7 @@ AcqCtrl::getNPreTriggerSamples()
 void
 AcqCtrl::setNPreTriggerSamples(unsigned npts)
 {
-	int st = acq_set_npts( (*this)->fw_, npts );
+	int st = acq_set_npts( (*this)->scope(), npts );
 	checkStat( st, __func__ );
 }
 
@@ -81,7 +81,7 @@ AcqCtrl::setNSamples(unsigned n)
 	if ( n < 1 || n > bufsz_ ) {
 		throw std::invalid_argument( string(__func__) );
 	}
-	int st = acq_set_nsamples( (*this)->fw_, n );
+	int st = acq_set_nsamples( (*this)->scope(), n );
 	checkStat( st, __func__ );
 }
 
@@ -127,7 +127,7 @@ AcqCtrl::setDecimation(unsigned n0,  unsigned n1)
 			}
 		}
 	}
-	int st = acq_set_decimation( (*this)->fw_, cic0Dec, cic1Dec );
+	int st = acq_set_decimation( (*this)->scope(), cic0Dec, cic1Dec );
 	checkStat( st, __func__ );
 }
 
@@ -143,7 +143,7 @@ AcqCtrl::getTriggerSrc(TriggerSource *src, bool *edg)
 void
 AcqCtrl::setTriggerSrc(TriggerSource  src, bool  rising)
 {
-	int st = acq_set_source( (*this)->fw_, src, rising ? 1 : -1 );
+	int st = acq_set_source( (*this)->scope(), src, rising ? 1 : -1 );
 	checkStat( st, __func__ );
 }
 
@@ -163,7 +163,7 @@ AcqCtrl::setAutoTimeoutMS(int timo)
 	if ( timo < 0 ) {
 		timo = ACQ_PARAM_TIMEOUT_INF;
 	}
-	int st = acq_set_autoTimeoutMs( (*this)->fw_, timo );
+	int st = acq_set_autoTimeoutMs( (*this)->scope(), timo );
 	checkStat( st, __func__ );
 }
 
@@ -179,7 +179,7 @@ void
 AcqCtrl::setScale(double scl)
 {
 	int32_t iscl = round( scl * ldexp(1.0, 30) );
-	int     st   = acq_set_scale( (*this)->fw_, 0, 0, iscl );
+	int     st   = acq_set_scale( (*this)->scope(), 0, 0, iscl );
 	checkStat( st, __func__ );
 }
 
@@ -193,7 +193,7 @@ void
 AcqCtrl::flushBuf()
 {
 	int st;
-	if ( (st = buf_flush( (*this)->fw_ ) ) < 0 ) {
+	if ( (st = buf_flush( (*this)->scope() ) ) < 0 ) {
 		checkStat( st, __func__ );
 	}
 }
@@ -202,7 +202,7 @@ unsigned
 AcqCtrl::readBuf(uint16_t *hdr, uint8_t *buf, size_t len)
 {
 	int st;
-	if ( (st = buf_read( (*this)->fw_, hdr, buf, len ) ) < 0 ) {
+	if ( (st = buf_read( (*this)->scope(), hdr, buf, len ) ) < 0 ) {
 		checkStat( st, __func__ );
 	}
 	return st;
@@ -212,7 +212,7 @@ unsigned
 AcqCtrl::readBuf(uint16_t *hdr, float *buf, size_t len)
 {
 	int st;
-	if ( (st = buf_read_flt( (*this)->fw_, hdr, buf, len ) ) < 0 ) {
+	if ( (st = buf_read_flt( (*this)->scope(), hdr, buf, len ) ) < 0 ) {
 		checkStat( st, __func__ );
 	}
 	return st;
@@ -236,6 +236,6 @@ void
 AcqCtrl::setExtTrigOutEnable(bool enabled)
 {
 	// automatically disabled if trigger source is set to EXT (in FW)
-	int       st = acq_set_trig_out_en( (*this)->fw_, enabled );
+	int       st = acq_set_trig_out_en( (*this)->scope(), enabled );
 	checkStat(st, __func__ );
 }

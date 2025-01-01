@@ -1,10 +1,11 @@
 #pragma once
 
 #include <PGA.hpp>
+#include <BoardRef.hpp>
 
-class PGAImpl : public PGA, public FWRef {
+class PGAImpl : public PGA, public BoardRef {
 public:
-	PGAImpl( FWPtr fwp );
+	PGAImpl( BoardInterface * );
 
 	virtual void
 	getDBRange(int *min, int *max) override;

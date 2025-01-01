@@ -190,35 +190,28 @@ Board::Board( FWPtr fwp, bool sim )
 	if ( ! simulation() ) {
 		hwInit( false );
 	}
-	double   dfltScl   = 0.075;
-	FWRef fwRef( fwp_ );
-	unsigned boardVers = (*fwRef)->getBoardVersion();
-	if        ( 1 == boardVers ) {
-		dfltScl = 0.0098; // empirical
-	} else if ( 2 == boardVers ) {
-		dfltScl = 0.0102; // empirical
-	}
-	for ( int i = 0; i < NumChannels; i++ ) {
-		vVoltScale_.push_back( dfltScl );
-	}
 }
 
 void
-Board::setVoltScale(int channel, double scl)
+Board::setVoltScale(int channel, double voltScale)
 {
-	if ( channel < 0 || channel >= NumChannels ) {
-		throw std::invalid_argument( "channel # out of range " );
+int st;
+	st = scope_set_full_scale_volts( (*this)->scope(), channel, voltScale );
+	if ( st < 0 ) {
+		throw std::runtime_error( string("Board::setVoltScale() - Error: ") + strerror( -st ) );
 	}
-	vVoltScale_[channel] = scl;
 }
 
 double
 Board::getVoltScale(int channel)
 {
-	if ( channel < 0 || channel >= NumChannels ) {
-		throw std::invalid_argument( "channel # out of range " );
+int    st;
+double val;
+	st = scope_get_full_scale_volts( (*this)->scope(), channel, &val );
+	if ( st < 0 ) {
+		throw std::runtime_error( string("Board::getVoltScale() - Error: ") + strerror( -st ) );
 	}
-	return vVoltScale_[channel];
+	return val;
 }
 
 // DAC interface

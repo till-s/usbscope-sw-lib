@@ -30,7 +30,6 @@ protected:
 	SlowDACPtr                 dac_;
 	ADCPtr                     adc_;
 	bool                       sim_;
-	std::vector<double>        vVoltScale_;
 
 	Board( const Board & )     = delete;
 

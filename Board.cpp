@@ -9,6 +9,7 @@
 #include <string.h>
 
 using std::make_shared;
+using std::shared_ptr;
 using std::map;
 using std::string;
 
@@ -52,7 +53,11 @@ ADCClk::create( BoardInterface *brd )
 FECPtr
 FEC::create( BoardInterface *brd )
 {
-	return make_shared<FEC>( brd );
+	try {
+		return make_shared<FEC>( brd );
+	} catch ( std::runtime_error &e ) {
+		return shared_ptr<FEC>();
+	}
 }
 
 typedef map<const string,unsigned> LedMap;

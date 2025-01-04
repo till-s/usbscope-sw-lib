@@ -37,8 +37,6 @@ protected:
 	operator=( const Board & ) = delete;
 public:
 
-	static const int NumChannels = 2;
-
 	Board(FWPtr fwp, bool sim = false );
 
 	bool simulation() const
@@ -50,6 +48,8 @@ public:
 	void unlock();
 
 	void hwInit(bool force);
+
+	unsigned getNumChannels();
 
 	// full-scale volts at max. gain
 	double getVoltScale(int channel);

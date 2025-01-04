@@ -174,6 +174,12 @@ Board::hwInit(bool force)
 	}
 }
 
+unsigned
+Board::getNumChannels()
+{
+	return scope_get_num_channels( (*this)->scope() );
+}
+
 Board::Board( FWPtr fwp, bool sim )
 // Create a temporary FWRef to lock; Board is not constructed yet!
 : BoardInterface      ( fwp, scope_open( (*FWRef(fwp))->fw_ ) ),

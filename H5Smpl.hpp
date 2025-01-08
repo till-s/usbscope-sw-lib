@@ -31,7 +31,7 @@ public:
 			return *this;
 		}
 	};
-	H5Smpl(const std::string &name, ScopeH5SampleType dtype, const std::vector<Dimension> &dims, const void *data);
+	H5Smpl(const std::string &name, ScopeH5SampleType dsetType, ScopeH5SampleType memType, unsigned offset, unsigned precision, const std::vector<Dimension> &dims, const void *data);
 
 	virtual void
 	addAttributes(const std::string &name, const std::vector<unsigned> &vals);
@@ -47,12 +47,4 @@ public:
 	addAttribute(const std::string &name, const std::string &val);
 
 	virtual ~H5Smpl();
-	template <typename T>
-	H5Smpl(const std::string &name, const T *data, const std::vector<Dimension> &dims);
 };
-
-template <>
-H5Smpl::H5Smpl(const std::string &name, const int16_t *data, const std::vector<Dimension> &dims);
-
-template <>
-H5Smpl::H5Smpl(const std::string &name, const double *data, const std::vector<Dimension> &dims);

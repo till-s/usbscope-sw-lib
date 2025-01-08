@@ -4,7 +4,6 @@
 #include <PGAImpl.hpp>
 #include <Max195xxADC.hpp>
 #include <DAC47cx.hpp>
-
 #include <scopeSup.h>
 #include <string.h>
 
@@ -223,6 +222,17 @@ double val;
 		throw std::runtime_error( string("Board::getVoltScale() - Error: ") + strerror( -st ) );
 	}
 	return val;
+}
+
+
+unsigned
+Board::getSampleSize()
+{
+int st = buf_get_sample_size( (*this)->scope() );
+	if ( st < 0 ) {
+		throw std::runtime_error( string("Board::getSampleSize() - Error: ") + strerror( -st ) );
+	}
+	return st;
 }
 
 // DAC interface

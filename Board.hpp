@@ -51,6 +51,8 @@ public:
 
 	unsigned getNumChannels();
 
+	unsigned getSampleSize();
+
 	// full-scale volts at max. gain
 	double getVoltScale(int channel);
 

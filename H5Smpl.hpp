@@ -34,13 +34,22 @@ public:
 	H5Smpl(const std::string &name, ScopeH5SampleType dsetType, ScopeH5SampleType memType, unsigned offset, unsigned precision, const std::vector<Dimension> &dims, const void *data);
 
 	virtual void
-	addAttributes(const std::string &name, const std::vector<unsigned> &vals);
+	addAttribute(const std::string &name, const std::vector<unsigned> &vals);
 
 	virtual void
-	addAttributes(const std::string &name, const std::vector<int> &vals);
+	addAttribute(const std::string &name, const std::vector<int> &vals);
 
 	virtual void
-	addAttributes(const std::string &name, const std::vector<double> &vals);
+	addAttribute(const std::string &name, const std::vector<double> &vals);
+
+	virtual void
+	addAttribute(const std::string &name, unsigned val);
+
+	virtual void
+	addAttribute(const std::string &name, int val);
+
+	virtual void
+	addAttribute(const std::string &name, double val);
 
 	// Single string! (scalars can have per-channel arrays)
 	virtual void

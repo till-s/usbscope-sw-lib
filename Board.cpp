@@ -172,10 +172,6 @@ SlowDAC::create( FWPtr fwp )
 void
 Board::hwInit(bool force)
 {
-	int st;
-	if ( (st = scope_init( (*this)->scope(), force )) < 0 ) {
-		throw std::runtime_error( std::string("scopeInit failed: ") + strerror(-st));
-	}
 }
 
 unsigned

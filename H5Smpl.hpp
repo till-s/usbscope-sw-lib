@@ -55,5 +55,14 @@ public:
 	virtual void
 	addAttribute(const std::string &name, const std::string &val);
 
+	virtual void
+	addHdrInfo(unsigned bufHdr, unsigned numChannels);
+
+	virtual void
+	addTriggerSource(TriggerSource src, int rising);
+
+	virtual void
+	addDate(time_t when);
+
 	virtual ~H5Smpl();
 };

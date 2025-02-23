@@ -1,6 +1,7 @@
 
 #include <H5Smpl.hpp>
 #include <stdexcept>
+#include <scopeSup.h>
 
 H5Smpl::H5Smpl(const std::string &name, ScopeH5SampleType dsetType, ScopeH5SampleType memType, unsigned offset, unsigned precision, const std::vector<Dimension> &dims, const void *data)
 {
@@ -64,6 +65,30 @@ H5Smpl::addAttribute(const std::string &name, const std::string &val)
 {
 	if ( scope_h5_add_string_attr( h5d_, name.c_str(), val.c_str() ) < 0 ) {
 		throw std::runtime_error("scope_h5_add_string_attr() failed");
+	}
+}
+
+void
+H5Smpl::addHdrInfo(unsigned bufHdr, unsigned numChannels)
+{
+	if ( scope_h5_add_bufhdr( h5d_, bufHdr, numChannels ) < 0 ) {
+		throw std::runtime_error("scope_h5_add_bufhdr() failed");
+	}
+}
+
+void
+H5Smpl::addDate(time_t when)
+{
+	if ( scope_h5_add_date( h5d_, when ) < 0 ) {
+		throw std::runtime_error("scope_h5_add_date() failed");
+	}
+}
+
+void
+H5Smpl::addTriggerSource(TriggerSource src, int rising)
+{
+	if ( scope_h5_add_trigger_source( h5d_, src, rising ) < 0 ) {
+		throw std::runtime_error("scope_h5_add_trigger_source() failed");
 	}
 }
 

@@ -231,6 +231,12 @@ int st = buf_get_sample_size( (*this)->scope() );
 	return st;
 }
 
+int
+Board::getFullScaleTicks()
+{
+	return buf_get_full_scale_ticks( (*this)->scope() );
+}
+
 // DAC interface
 void
 BoardDAC::resetDAC()

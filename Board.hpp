@@ -56,6 +56,8 @@ public:
 	// full-scale volts at max. gain
 	double getVoltScale(int channel);
 
+	int getFullScaleTicks();
+
 	void
 	setVoltScale(int channel, double scl);
 };

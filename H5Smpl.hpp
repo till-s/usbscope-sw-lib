@@ -4,12 +4,14 @@
 #include <vector>
 #include <hdf5Sup.h>
 
+class H5DSpace;
+
 class H5Smpl {
 	ScopeH5Data *h5d_ { nullptr };
+	size_t       ndims_;
 public:
 	// Data space covers indices 0..maxlen-1
-    // The selected part stretches from off..actlen
-	// actlen == 0 identidal with actlen == maxlen
+    // The selected part stretches from off..actlen.
 	struct Dimension : ScopeDataDimension {
 		Dimension()
 		{
@@ -31,7 +33,13 @@ public:
 			return *this;
 		}
 	};
-	H5Smpl(const std::string &name, ScopeH5SampleType dsetType, ScopeH5SampleType memType, unsigned offset, unsigned precision, const std::vector<Dimension> &dims, const void *data);
+	H5Smpl(const std::string &name, ScopeH5SampleType dsetType, unsigned offset, unsigned precision, const std::vector<Dimension> &dims);
+
+	// fileSelector == nullptr => H5S_ALL
+    // memSpace == nullptr => H5S_ALL, mem_type := dataset type
+
+	virtual void
+	addHSlab(const std::vector<Dimension> *fileSelector, const H5DSpace *memSpace, const void *data);
 
 	virtual void
 	addAttribute(const std::string &name, const std::vector<unsigned> &vals);
@@ -65,4 +73,22 @@ public:
 	addDate(time_t when);
 
 	virtual ~H5Smpl();
+};
+
+class H5DSpace {
+	ScopeH5DSpace *h5s_ { nullptr };
+public:
+	size_t getRank() const { return scope_h5_space_get_rank( h5s_ ); }
+
+	H5DSpace(std::vector<H5Smpl::Dimension> dims, ScopeH5SampleType typ, unsigned offset = 0, unsigned precision = 0);
+
+	ScopeH5DSpace *
+	get() const
+	{
+		return h5s_;
+	}
+
+	void setHSlabSelection(std::vector<H5Smpl::Dimension> sel);
+
+	~H5DSpace();
 };

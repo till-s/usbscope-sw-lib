@@ -3,10 +3,22 @@
 #include <stdexcept>
 #include <scopeSup.h>
 
-H5Smpl::H5Smpl(const std::string &name, ScopeH5SampleType dsetType, ScopeH5SampleType memType, unsigned offset, unsigned precision, const std::vector<Dimension> &dims, const void *data)
+H5Smpl::H5Smpl(const std::string &name, ScopeH5SampleType dsetType, unsigned offset, unsigned precision, const std::vector<Dimension> &dims)
+ : ndims_( dims.size() )
 {
-	if ( ! (h5d_ = scope_h5_create_from_hslab( name.c_str(), dsetType, precision, offset, memType, &dims[0], dims.size(), data )) ) {
-		throw std::runtime_error("scope_h5_create_from_hslab() failed");
+	if ( ! (h5d_ = scope_h5_create_only( name.c_str(), dsetType, precision, offset, &dims[0], dims.size() )) ) {
+		throw std::runtime_error("scope_h5_create_only() failed");
+	}
+}
+
+void
+H5Smpl::addHSlab(const std::vector<Dimension> *fileSelector, const H5DSpace *memSpace, const void *data)
+{
+	if ( fileSelector && (ndims_ != fileSelector->size()) ) {
+		throw std::runtime_error("H5Smpl::addHSlab(): invalid # dimensions of selector");
+	}
+	if ( scope_h5_add_hslab( h5d_, fileSelector ? &(*fileSelector)[0] : nullptr, memSpace ? memSpace->get() : nullptr, data ) ) {
+		throw std::runtime_error("H5Smpl::addHSlab(): scope_h5_add_hslab() failed");
 	}
 }
 
@@ -95,4 +107,25 @@ H5Smpl::addTriggerSource(TriggerSource src, int rising)
 H5Smpl::~H5Smpl()
 {
 	scope_h5_close( h5d_ );
+}
+
+H5DSpace::H5DSpace(std::vector<H5Smpl::Dimension> dims, ScopeH5SampleType typ, unsigned offset, unsigned precision)
+: h5s_( scope_h5_space_create( typ, offset, precision, &dims[0], dims.size() ) )
+{
+	if ( ! h5s_ ) {
+		throw std::runtime_error("H5DSpace::H5DSpace creation failed");
+	}
+}
+
+H5DSpace::~H5DSpace()
+{
+	scope_h5_space_destroy( h5s_ );
+}
+
+void
+H5DSpace::setHSlabSelection(std::vector<H5Smpl::Dimension> sel)
+{
+	if ( scope_h5_space_select( h5s_, &sel[0], sel.size() ) ) {
+		throw std::runtime_error("H5DSpace::setHSlabSelection() failed");
+	}
 }

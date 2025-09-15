@@ -12,6 +12,8 @@
 #include <SlowDAC.hpp>
 #include <BoardRef.hpp>
 
+#include <scopeSup.h>
+
 class Max195xxADC;
 
 typedef std::shared_ptr<Max195xxADC> ADCPtr;

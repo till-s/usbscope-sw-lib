@@ -3,7 +3,7 @@
 #include <FWComm.hpp>
 #include <SlowDAC.hpp>
 
-class DAC47cx : public SlowDAC, public FWRef {
+class DAC47cx : public virtual SlowDAC, public FWRef {
 public:
 	DAC47cx( FWPtr fwp )
 	: FWRef( fwp )

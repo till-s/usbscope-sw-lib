@@ -22,7 +22,7 @@ public:
 	}
 };
 
-class BoardDAC : public BoardRef, public SlowDAC  {
+class BoardDAC : public BoardRef, public virtual SlowDAC  {
 public:
 	BoardDAC( BoardInterface *brd )
 	: BoardRef( brd )
@@ -41,6 +41,12 @@ public:
 
 	virtual double
 	getVolts(int channel) override;
+
+	virtual bool
+	getRangeHigh(int channel) override;
+
+	virtual void
+	setRangeHigh(int channel, bool on) override;
 };
 
 ADCClkPtr
@@ -163,12 +169,6 @@ PGA::create(BoardInterface *brd)
 	return std::make_shared<PGAImpl>( brd );
 }
 
-SlowDACPtr
-SlowDAC::create( FWPtr fwp )
-{
-	return make_shared<DAC47cx>( fwp );
-}
-
 void
 Board::hwInit(bool force)
 {
@@ -270,4 +270,16 @@ double volt;
 		throw std::runtime_error(string("Board::getVolts: Error - ") + strerror(-st));
 	}
 	return volt;
+}
+
+bool
+BoardDAC::getRangeHigh(int channel)
+{
+	throw std::runtime_error(string("Board::getRangeHigh() - board does not support DAC ranges"));
+}
+
+void
+BoardDAC::setRangeHigh(int channel, bool val)
+{
+	throw std::runtime_error(string("Board::getRangeHigh() - board does not support DAC ranges"));
 }

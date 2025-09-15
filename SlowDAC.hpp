@@ -22,6 +22,10 @@ public:
 	virtual double
 	getVolts(int channel) = 0;
 
-	static SlowDACPtr
-	create( FWPtr fwp );
+	virtual bool
+	getRangeHigh(int channel) = 0;
+
+	virtual void
+	setRangeHigh(int channel, bool on) = 0;
+
 };

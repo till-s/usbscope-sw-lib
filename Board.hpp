@@ -62,5 +62,7 @@ public:
 
 	void
 	setVoltScale(int channel, double scl);
+
+	std::shared_ptr<ScopeParams> makeScopeParams(std::shared_ptr<ScopeParams> = std::shared_ptr<ScopeParams>());
 };
 

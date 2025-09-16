@@ -56,13 +56,11 @@ public:
 	unsigned getSampleSize();
 
 	// full-scale volts at max. gain
-	double getVoltScale(int channel);
+	virtual double getVoltScale(int channel);
 
 	int getFullScaleTicks();
 
-	void
+	virtual void
 	setVoltScale(int channel, double scl);
-
-	std::shared_ptr<ScopeParams> makeScopeParams(std::shared_ptr<ScopeParams> = std::shared_ptr<ScopeParams>());
 };
 

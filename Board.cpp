@@ -243,21 +243,6 @@ struct ScopeParamsDel {
 	}
 };
 
-std::shared_ptr<ScopeParams>
-Board::makeScopeParams(std::shared_ptr<ScopeParams> old) {
-	auto p = scope_alloc_params( (*this)->scope() );
-	if ( ! p ) {
-		throw std::runtime_error("Board::makeScopeParam() -- no memory");
-	}
-	auto rval = std::shared_ptr<ScopeParams>( p, ScopeParamsDel() );
-
-	if ( old ) {
-		*rval = *old;
-	}
-
-	return rval;
-}
-
 // DAC interface
 void
 BoardDAC::resetDAC()

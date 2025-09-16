@@ -33,6 +33,12 @@ int st;
 	check( st, "Front-End has no Attenuator controls");
 }
 
+void
+FEC::setAttenuator(int channel, double db)
+{
+	setAttenuator(channel, db > (min_ + max_)/2.0);
+}
+
 bool
 FEC::getAttenuator(int channel)
 {

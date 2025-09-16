@@ -21,7 +21,6 @@ H5Smpl::addHSlab(const std::vector<Dimension> *fileSelector, const H5DSpace *mem
 		throw std::runtime_error("H5Smpl::addHSlab(): scope_h5_add_hslab() failed");
 	}
 }
-
 void
 H5Smpl::addAttribute(const std::string &name, const std::vector<unsigned> &vals)
 {
@@ -101,6 +100,14 @@ H5Smpl::addTriggerSource(TriggerSource src, int rising)
 {
 	if ( scope_h5_add_trigger_source( h5d_, src, rising ) < 0 ) {
 		throw std::runtime_error("scope_h5_add_trigger_source() failed");
+	}
+}
+
+void
+H5Smpl::addScopeParams(const ScopeParams *p)
+{
+	if ( scope_h5_add_scope_parameters( h5d_, p ) ) {
+		throw std::runtime_error("scope_h5_add_scope_params() failed");
 	}
 }
 

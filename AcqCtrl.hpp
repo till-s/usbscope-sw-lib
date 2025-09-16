@@ -39,7 +39,7 @@ public:
 
 	// auto factorize decimation into cic0, cic1
 	virtual void
-	computeCIC(unsigned decimation, unsigned *cic0, unsigned *cic1);
+	computeCICDecimation(unsigned decimation, unsigned *cic0, unsigned *cic1);
 
 	virtual void
 	setDecimation(unsigned cic0,  unsigned cic1 = 0);

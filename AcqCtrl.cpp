@@ -95,7 +95,7 @@ AcqCtrl::getDecimation(unsigned *cic0, unsigned *cic1)
 }
 
 void
-AcqCtrl::computeCIC(unsigned decimation, unsigned *cic0, unsigned *cic1)
+AcqCtrl::computeCICDecimation(unsigned decimation, unsigned *cic0, unsigned *cic1)
 {
 	uint8_t  cic0Dec;
 	uint32_t cic1Dec;
@@ -137,7 +137,7 @@ AcqCtrl::setDecimation(unsigned n0,  unsigned n1)
 		cic1Dec = n1;
 	} else {
 		unsigned tmp0, tmp1;
-		computeCIC(n0, &tmp0, &tmp1);
+		computeCICDecimation(n0, &tmp0, &tmp1);
 		cic0Dec = tmp0;
 		cic1Dec = tmp1;
 

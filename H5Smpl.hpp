@@ -72,6 +72,9 @@ public:
 	virtual void
 	addDate(time_t when);
 
+	virtual void
+	addScopeParams(const ScopeParams *p);
+
 	virtual ~H5Smpl();
 };
 

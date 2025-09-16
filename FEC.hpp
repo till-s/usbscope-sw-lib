@@ -21,6 +21,8 @@ class FEC : public BoardRef {
 public:
 	FEC( BoardInterface * );
 
+	virtual void getDBRange( double *min, double *max );
+
 	virtual void setAttenuator(int channel, bool on);
 
 	virtual bool getAttenuator(int channel);

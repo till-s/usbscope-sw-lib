@@ -93,3 +93,15 @@ int    st;
 	check( st, "Front-End has no DAC range controls" );
 	return !!st;
 }
+
+void
+FEC::getDBRange(double *min, double *max)
+{
+	if ( min ) {
+		*min = min_;
+	}
+
+	if ( max ) {
+		*max = max_;
+	}
+}

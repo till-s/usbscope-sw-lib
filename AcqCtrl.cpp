@@ -31,17 +31,17 @@ AcqCtrl::getTriggerLevelPercent()
 {
 	AcqParams p;
 	xfer( NULL, &p );
-	return 100.0*(double)p.level/32767.0;
+	return acq_level_to_percent(p.level);
 }
 
 void
-AcqCtrl::setTriggerLevelPercent(double lvl)
+AcqCtrl::setTriggerLevelPercent(double percent)
 {
 	AcqParams p;
-	if ( lvl < -100.0 || lvl > 100.0 ) {
+	if ( percent < -100.0 || percent > 100.0 ) {
 		throw std::invalid_argument( "AcqCtrl::setTriggerLevelPercent()" );
 	}
-	int16_t    l = round( 32767.0 * lvl/100.0 );
+	int16_t    l = acq_percent_to_level( percent );
 	int       st = acq_set_level( (*this)->scope(), l, 1000 );
 	checkStat(st, __func__ );
 }

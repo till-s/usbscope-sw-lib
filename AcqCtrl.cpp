@@ -95,6 +95,33 @@ AcqCtrl::getDecimation(unsigned *cic0, unsigned *cic1)
 }
 
 void
+AcqCtrl::computeCIC(unsigned decimation, unsigned *cic0, unsigned *cic1)
+{
+	uint8_t  cic0Dec;
+	uint32_t cic1Dec;
+
+	if ( decimation < 1 || decimation > 16 * (1<<12) ) {
+		throw std::invalid_argument( string(__func__) + " decimation out of range" );
+	}
+	if ( 1 == decimation ) {
+		cic0Dec = 1;
+		cic1Dec = 1;
+	} else {
+		for ( cic0Dec = 16; cic0Dec > 1; cic0Dec-- ) {
+			if ( (decimation % cic0Dec) == 0 ) {
+				cic1Dec = decimation / cic0Dec;
+				break;
+			}
+		}
+		if ( 1 == cic0Dec ) {
+			throw std::invalid_argument( string(__func__) + " decimation must have a factor in 2..16" );
+		}
+	}
+	*cic0 = cic0Dec;
+	*cic1 = cic1Dec;
+}
+
+void
 AcqCtrl::setDecimation(unsigned n0,  unsigned n1)
 {
 	uint8_t  cic0Dec;
@@ -109,23 +136,11 @@ AcqCtrl::setDecimation(unsigned n0,  unsigned n1)
 		cic0Dec = n0;
 		cic1Dec = n1;
 	} else {
-		if ( n0 < 1 || n0 > 16 * (1<<12) ) {
-			throw std::invalid_argument( string(__func__) + " decimation out of range" );
-		}
-		if ( 1 == n0 ) {
-			cic0Dec = 1;
-			cic1Dec = 1;
-		} else {
-			for ( cic0Dec = 16; cic0Dec > 1; cic0Dec-- ) {
-				if ( (n0 % cic0Dec) == 0 ) {
-					cic1Dec = n0 / cic0Dec;
-					break;
-				}
-			}
-			if ( 1 == cic0Dec ) {
-				throw std::invalid_argument( string(__func__) + " decimation must have a factor in 2..16" );
-			}
-		}
+		unsigned tmp0, tmp1;
+		computeCIC(n0, &tmp0, &tmp1);
+		cic0Dec = tmp0;
+		cic1Dec = tmp1;
+
 	}
 	int st = acq_set_decimation( (*this)->scope(), cic0Dec, cic1Dec );
 	checkStat( st, __func__ );

@@ -26,7 +26,8 @@ public:
 	virtual void setAttenuator(int channel, bool on);
 	virtual void setAttenuator(int channel, double db);
 
-	virtual bool getAttenuator(int channel);
+	virtual double getAttenuator(int channel);
+	virtual bool isAttenuatorOn(int channel);
 
 	virtual void setTermination(int channel, bool on);
 

@@ -28,25 +28,31 @@ int st;
 void
 FEC::setAttenuator(int channel, bool on)
 {
-int st;
-	st = fecSetAtt( (*this)->scope(), channel, on ? max_ : min_ );
-	check( st, "Front-End has no Attenuator controls");
+	setAttenuator( channel, (on ? max_ : min_) );
 }
 
 void
 FEC::setAttenuator(int channel, double db)
 {
-	setAttenuator(channel, db > (min_ + max_)/2.0);
+	int st = fecSetAtt( (*this)->scope(), channel, db );
+	check( st, "Front-End has no Attenuator controls");
 }
 
 bool
+FEC::isAttenuatorOn(int channel)
+{
+	double val = getAttenuator( channel );
+	return abs( max_ - val ) < abs( min_ - val );
+}
+
+double
 FEC::getAttenuator(int channel)
 {
 int    st;
 double val;
 	st = fecGetAtt( (*this)->scope(), channel, &val );
 	check( st, "Front-End has no Attenuator controls" );
-	return abs( max_ - val ) < abs( min_ - val );
+	return val;
 }
 
 void

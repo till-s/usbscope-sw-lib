@@ -75,6 +75,9 @@ public:
 	virtual void
 	addScopeParams(const ScopeParams *p);
 
+	virtual void
+	addComment(const std::string &);
+
 	virtual ~H5Smpl();
 };
 

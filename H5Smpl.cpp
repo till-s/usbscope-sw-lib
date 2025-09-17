@@ -111,6 +111,14 @@ H5Smpl::addScopeParams(const ScopeParams *p)
 	}
 }
 
+void
+H5Smpl::addComment(const std::string &comment)
+{
+	if ( scope_h5_add_comment( h5d_, comment.c_str() ) ) {
+		throw std::runtime_error("scope_h5_add_comment() failed");
+	}
+}
+
 H5Smpl::~H5Smpl()
 {
 	scope_h5_close( h5d_ );

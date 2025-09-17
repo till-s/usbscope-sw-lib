@@ -287,5 +287,5 @@ BoardDAC::getRangeHigh(int channel)
 void
 BoardDAC::setRangeHigh(int channel, bool val)
 {
-	throw std::runtime_error(string("Board::getRangeHigh() - board does not support DAC ranges"));
+	throw std::runtime_error(string("Board::setRangeHigh() - board does not support DAC ranges"));
 }

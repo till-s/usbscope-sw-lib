@@ -23,9 +23,11 @@ public:
 };
 
 class BoardDAC : public BoardRef, public virtual SlowDAC  {
+	FECPtr fec_;
 public:
-	BoardDAC( BoardInterface *brd )
-	: BoardRef( brd )
+	BoardDAC( BoardInterface *brd, FECPtr fec )
+	: BoardRef( brd ),
+	  fec_    ( fec )
 	{
 	}
 
@@ -189,7 +191,7 @@ Board::Board( FWPtr fwp, bool sim )
   pga_                ( PGA::create             ( this )      ),
   leds_               ( LED::create             ( fwp  )      ),
   fec_                ( FEC::create             ( this )      ),
-  dac_                ( make_shared<BoardDAC>   ( this )      ),
+  dac_                ( make_shared<BoardDAC>   ( this, fec_ )),
   adc_                ( make_shared<Max195xxADC>( fwp  )      ),
   sim_                ( sim                                   )
 {
@@ -281,11 +283,13 @@ double volt;
 bool
 BoardDAC::getRangeHigh(int channel)
 {
-	throw std::runtime_error(string("Board::getRangeHigh() - board does not support DAC ranges"));
+	// board lock is obtained by the fec_
+	return fec_->getDACRangeHi( channel );
 }
 
 void
 BoardDAC::setRangeHigh(int channel, bool val)
 {
-	throw std::runtime_error(string("Board::setRangeHigh() - board does not support DAC ranges"));
+	// board lock is obtained by the fec_
+	fec_->setDACRangeHi( channel, val );
 }

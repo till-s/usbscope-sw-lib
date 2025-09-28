@@ -55,7 +55,7 @@ public:
 
 	unsigned getSampleSize();
 
-	// full-scale volts at max. gain
+	// full-scale volt at max. gain
 	virtual double getVoltScale(int channel);
 
 	int getFullScaleTicks();

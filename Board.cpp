@@ -36,13 +36,13 @@ public:
 	resetDAC() override;
 
 	virtual void
-	getVoltsRange( double *vmin, double *vmax ) override;
+	getVoltRange( double *vmin, double *vmax ) override;
 
 	virtual void
-	setVolts(int channel, double volt) override;
+	setVolt(int channel, double volt) override;
 
 	virtual double
-	getVolts(int channel) override;
+	getVolt(int channel) override;
 
 	virtual bool
 	getRangeHigh(int channel) override;
@@ -204,7 +204,7 @@ void
 Board::setVoltScale(int channel, double voltScale)
 {
 int st;
-	st = scope_set_full_scale_volts( (*this)->scope(), channel, voltScale );
+	st = scope_set_full_scale_volt( (*this)->scope(), channel, voltScale );
 	if ( st < 0 ) {
 		throw std::runtime_error( string("Board::setVoltScale() - Error: ") + strerror( -st ) );
 	}
@@ -215,7 +215,7 @@ Board::getVoltScale(int channel)
 {
 int    st;
 double val;
-	st = scope_get_full_scale_volts( (*this)->scope(), channel, &val );
+	st = scope_get_full_scale_volt( (*this)->scope(), channel, &val );
 	if ( st < 0 ) {
 		throw std::runtime_error( string("Board::getVoltScale() - Error: ") + strerror( -st ) );
 	}
@@ -253,29 +253,29 @@ BoardDAC::resetDAC()
 }
 
 void
-BoardDAC::getVoltsRange( double *vmin, double *vmax )
+BoardDAC::getVoltRange( double *vmin, double *vmax )
 {
-	if ( dacGetVoltsRange( (*this)->scope(), vmin, vmax ) < 0 ) {
-		throw std::runtime_error("Board::getVoltsRange: dacGetVoltsRange() failed");
+	if ( dacGetVoltRange( (*this)->scope(), vmin, vmax ) < 0 ) {
+		throw std::runtime_error("Board::getVoltRange: dacGetVoltRange() failed");
 	}
 }
 
 void
-BoardDAC::setVolts(int channel, double volt)
+BoardDAC::setVolt(int channel, double volt)
 {
 int st;
-	if ( (st = dacSetVolts( (*this)->scope(), channel, volt )) < 0 ) {
-		throw std::runtime_error(string("Board::setVolts: Error - ") + strerror(-st));
+	if ( (st = dacSetVolt( (*this)->scope(), channel, volt )) < 0 ) {
+		throw std::runtime_error(string("Board::setVolt: Error - ") + strerror(-st));
 	}
 }
 
 double
-BoardDAC::getVolts(int channel)
+BoardDAC::getVolt(int channel)
 {
 int st;
 double volt;
-	if ( (st = dacGetVolts( (*this)->scope(), channel, &volt )) < 0 ) {
-		throw std::runtime_error(string("Board::getVolts: Error - ") + strerror(-st));
+	if ( (st = dacGetVolt( (*this)->scope(), channel, &volt )) < 0 ) {
+		throw std::runtime_error(string("Board::getVolt: Error - ") + strerror(-st));
 	}
 	return volt;
 }

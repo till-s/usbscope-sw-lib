@@ -23,7 +23,7 @@ DAC47cx::resetDAC()
 }
 
 void
-DAC47cx::getVoltsRange( double *pvmin, double *pvmax )
+DAC47cx::getVoltRange( double *pvmin, double *pvmax )
 {
 	float vmin, vmax;
 
@@ -53,14 +53,14 @@ DAC47cx::getTicks(int channel)
 }
 
 void
-DAC47cx::setVolts(int channel, double volt)
+DAC47cx::setVolt(int channel, double volt)
 {
 	int st = dac47cxSetVolt( (*this)->fw_, channel, (float)volt );
 	checkRes( st, "setVolt()" );
 }
 
 double
-DAC47cx::getVolts(int channel)
+DAC47cx::getVolt(int channel)
 {
 	float volt;
 	int st = dac47cxGetVolt( (*this)->fw_, channel, &volt );

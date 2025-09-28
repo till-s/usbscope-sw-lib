@@ -14,13 +14,13 @@ public:
 	resetDAC()  = 0;
 
 	virtual void
-	getVoltsRange( double *vmin, double *vmax ) = 0;
+	getVoltRange( double *vmin, double *vmax ) = 0;
 
 	virtual void
-	setVolts(int channel, double volt) = 0;
+	setVolt(int channel, double volt) = 0;
 
 	virtual double
-	getVolts(int channel) = 0;
+	getVolt(int channel) = 0;
 
 	virtual bool
 	getRangeHigh(int channel) = 0;

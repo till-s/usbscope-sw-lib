@@ -14,7 +14,7 @@ public:
 	resetDAC() override;
 
 	virtual void
-	getVoltsRange( double *vmin, double *vmax ) override;
+	getVoltRange( double *vmin, double *vmax ) override;
 
 	virtual void
 	setTicks(int channel, int ticks);
@@ -23,10 +23,10 @@ public:
 	getTicks(int channel);
 
 	virtual void
-	setVolts(int channel, double volt) override;
+	setVolt(int channel, double volt) override;
 
 	virtual double
-	getVolts(int channel) override;
+	getVolt(int channel) override;
 
 	virtual void
 	setRefInternalX1();

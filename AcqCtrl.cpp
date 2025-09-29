@@ -99,23 +99,14 @@ AcqCtrl::computeCICDecimation(unsigned decimation, unsigned *cic0, unsigned *cic
 {
 	uint8_t  cic0Dec;
 	uint32_t cic1Dec;
+	int      st = acq_auto_decimation( (*this)->scope(), decimation, &cic0Dec, &cic1Dec );
 
-	if ( decimation < 1 || decimation > 16 * (1<<12) ) {
+	if ( -ERANGE == st ) {
 		throw std::invalid_argument( string(__func__) + " decimation out of range" );
-	}
-	if ( 1 == decimation ) {
-		cic0Dec = 1;
-		cic1Dec = 1;
-	} else {
-		for ( cic0Dec = 16; cic0Dec > 1; cic0Dec-- ) {
-			if ( (decimation % cic0Dec) == 0 ) {
-				cic1Dec = decimation / cic0Dec;
-				break;
-			}
-		}
-		if ( 1 == cic0Dec ) {
-			throw std::invalid_argument( string(__func__) + " decimation must have a factor in 2..16" );
-		}
+	} else if ( -EINVAL == st ) {
+		throw std::invalid_argument( string(__func__) + " decimation must have a factor in 2..16" );
+	} else if ( st < 0 ) {
+		throw std::invalid_argument( string(__func__) + " decimation could  not be computed" );
 	}
 	*cic0 = cic0Dec;
 	*cic1 = cic1Dec;

@@ -20,7 +20,7 @@ FEC::FEC( BoardInterface *brd )
 : BoardRef( brd )
 {
 int st;
-	st = fecGetAttRange( (*this)->scope(), &min_, &max_ );
+	st = fecGetAttRangeDb( (*this)->scope(), &min_, &max_ );
 	check( st, "Front-End has no Attenuator controls");
 }
 
@@ -28,29 +28,29 @@ int st;
 void
 FEC::setAttenuator(int channel, bool on)
 {
-	setAttenuator( channel, (on ? max_ : min_) );
+	setAttenuatorDb( channel, (on ? max_ : min_) );
 }
 
 void
-FEC::setAttenuator(int channel, double db)
+FEC::setAttenuatorDb(int channel, double db)
 {
-	int st = fecSetAtt( (*this)->scope(), channel, db );
+	int st = fecSetAttDb( (*this)->scope(), channel, db );
 	check( st, "Front-End has no Attenuator controls");
 }
 
 bool
 FEC::isAttenuatorOn(int channel)
 {
-	double val = getAttenuator( channel );
+	double val = getAttenuatorDb( channel );
 	return abs( max_ - val ) < abs( min_ - val );
 }
 
 double
-FEC::getAttenuator(int channel)
+FEC::getAttenuatorDb(int channel)
 {
 int    st;
 double val;
-	st = fecGetAtt( (*this)->scope(), channel, &val );
+	st = fecGetAttDb( (*this)->scope(), channel, &val );
 	check( st, "Front-End has no Attenuator controls" );
 	return val;
 }

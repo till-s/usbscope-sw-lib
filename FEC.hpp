@@ -24,9 +24,9 @@ public:
 	virtual void getDBRange( double *min, double *max );
 
 	virtual void setAttenuator(int channel, bool on);
-	virtual void setAttenuator(int channel, double db);
+	virtual void setAttenuatorDb(int channel, double db);
 
-	virtual double getAttenuator(int channel);
+	virtual double getAttenuatorDb(int channel);
 	virtual bool isAttenuatorOn(int channel);
 
 	virtual void setTermination(int channel, bool on);

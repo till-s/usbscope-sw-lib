@@ -25,7 +25,7 @@ void
 PGAImpl::getDBRange(int *min, int *max)
 {
 	double attMin, attMax;
-	int rv = pgaGetAttRange( (*this)->scope(), &attMin, &attMax );
+	int rv = pgaGetAttRangeDb( (*this)->scope(), &attMin, &attMax );
 
 	checkRes( rv, "getDBRange()" );
 	if ( min ) *min = round( attMin );
@@ -35,7 +35,7 @@ PGAImpl::getDBRange(int *min, int *max)
 void
 PGAImpl::setDBAtt(unsigned channel, float att)
 {
-	int rv = pgaSetAtt( (*this)->scope(), channel, att );
+	int rv = pgaSetAttDb( (*this)->scope(), channel, att );
 	checkRes( rv, "setDBAtt()" );
 }
 
@@ -43,7 +43,7 @@ float
 PGAImpl::getDBAtt(unsigned channel)
 {
 	double att;
-	int   rv = pgaGetAtt( (*this)->scope(), channel, &att );
+	int   rv = pgaGetAttDb( (*this)->scope(), channel, &att );
 	checkRes( rv, "getDBAtt()" );
 	return att;
 }

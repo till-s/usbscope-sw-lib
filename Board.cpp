@@ -72,7 +72,7 @@ typedef map<const string,unsigned> LedMap;
 class LEDv1 : public LED, public FWRef {
 private:
 	uint8_t               cache_[3];
-	static const unsigned BASE = 0;
+	static const unsigned BASE = FW_LED_CR0_OFF;
 	static LedMap         map_;
 
 public:

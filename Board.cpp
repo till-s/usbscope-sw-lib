@@ -158,7 +158,7 @@ LEDPtr
 LED::create(FWPtr fwp)
 {
 	unsigned boardVersion = fwp->getBoardVersion();
-	if ( 1 == boardVersion || 2 == boardVersion ) {
+	if ( 1 == boardVersion || 2 == boardVersion || 3 == boardVersion ) {
 		return make_shared<LEDv1>( fwp );
 	} else {
 		return std::make_shared<LEDNone>();

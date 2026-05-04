@@ -3,7 +3,6 @@
 #include <FEC.hpp>
 #include <PGAImpl.hpp>
 #include <Max195xxADC.hpp>
-#include <DAC47cx.hpp>
 #include <scopeSup.h>
 #include <string.h>
 

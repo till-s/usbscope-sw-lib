@@ -114,3 +114,14 @@ Flash::setWP(bool on)
 		}
 	}
 }
+
+Flash::WriteEnable::WriteEnable(Flash *flash)
+: flash_( flash )
+{
+	flash_->setWP( false );
+}
+
+Flash::WriteEnable::~WriteEnable()
+{
+	flash_->setWP( true );
+}

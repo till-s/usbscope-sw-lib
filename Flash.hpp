@@ -53,4 +53,13 @@ public:
 	virtual void setWP(bool);
 
 	virtual ~Flash();
+
+	class WriteEnable {
+		WriteEnable(const WriteEnable &)            = delete;
+		WriteEnable& operator=(const WriteEnable &) = delete;
+		Flash *flash_;
+	public:
+		WriteEnable(Flash *flash);
+		~WriteEnable();
+	};
 };

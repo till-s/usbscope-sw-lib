@@ -1,31 +1,52 @@
 #pragma once
 
+#include <system_error>
+#include <string>
+
 #include <BoardRef.hpp>
 
-class FlashWriterProgress;
-
-struct FlashWriterState {
-	// initially 0, increments after each block
-	unsigned index;
-	// starting address of area, remains constant
-	unsigned address;
-	// size of area
-	unsigned size;
-	// completed # bytes
-	unsigned completed; 
-
-	FlashWriterProgress *progress;
-
-	FlashWriterState(FlashWriterProgress *);
-};
+class FlashWriterState;
 
 class FlashWriterProgress {
 public:
 	enum class Operation { ERASE, VERIFY_ERASED, WRITE, VERIFY_WRITTEN };
 
-	virtual int advance(Operation, const FlashWriterState *state) = 0;
+	virtual int advance(const FlashWriterState *state) = 0;
 	virtual ~FlashWriterProgress() = default;
+
+	static const std::string &toString(Operation);
 };
+
+struct FlashWriterState {
+	FlashWriterProgress::Operation operation;
+	// initially 0, increments after each block
+	unsigned                       index;
+	// starting address of area, remains constant
+	unsigned                       address;
+	// size of area
+	unsigned                       size;
+	// completed # bytes
+	unsigned                       completed; 
+
+	FlashWriterProgress *progress;
+
+	FlashWriterState(FlashWriterProgress *, FlashWriterProgress::Operation);
+};
+
+
+class FlashError : public std::system_error {
+public:
+	FlashError()
+	: system_error(0, std::generic_category())
+	{
+	}
+
+	FlashError(int code, const std::string &msg)
+	: system_error(code < 0 ? -code : code, std::generic_category(), msg)
+	{
+	}
+};
+
 
 struct AT25Flash;
 
@@ -48,7 +69,7 @@ public:
 	virtual ssize_t read(unsigned addr, uint8_t *buf, size_t len);
 
 	virtual ssize_t erase(unsigned addr, size_t len, FlashWriterProgress *progress = nullptr);
-	virtual ssize_t write(unsigned addr, uint8_t *buf, size_t len, FlashWriterProgress *progress = nullptr);
+	virtual ssize_t write(unsigned addr, const uint8_t *buf, size_t len, FlashWriterProgress *progress = nullptr);
 
 	virtual void setWP(bool);
 

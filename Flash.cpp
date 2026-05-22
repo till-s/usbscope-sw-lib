@@ -21,16 +21,16 @@ Flash::flash()
 	// lazy-init
 	if ( ! flash_ ) {
 		// caller must hold the FWRef
-		flash_ = at25_open(unlockedPtr()->fw_, 0);
-		if ( ! flash_ ) {
-			throw std::runtime_error("at25_open failed");
+		int status = at25_open1(unlockedPtr()->fw_, &flash_, 0);
+		if ( status ) {
+			throw FlashError(status, "at25_open failed");
 		}
 	}
 	return flash_;
 }
 
-FlashWriterState::FlashWriterState(FlashWriterProgress *progress)
-: index(0), progress(progress)
+FlashWriterState::FlashWriterState(FlashWriterProgress *progress, FlashWriterProgress::Operation operation)
+: operation(operation), index(0), progress(progress)
 {
 	// other fields initialized by progress callback
 }
@@ -57,12 +57,13 @@ progressC(AT25Flash *flash, void *closure, int flag, unsigned addr, unsigned rem
 		return 0;
 	}
 	if ( 0 == state->index ) {
-		state->address = addr;
-		state->size    = remain;
+		state->address   = addr;
+		state->size      = remain;
 	}
-	state->completed                  = state->size - remain;
 	FlashWriterProgress::Operation op = flag2op( flag );
-	int rval = state->progress->advance(op, state);
+	state->completed                  = state->size - remain;
+	state->operation                  = op;
+	int rval = state->progress->advance(state);
 	if ( 0 == remain ) {
 		// reset index in case the state is reused (prog->verify)
 		state->index = 0;
@@ -78,39 +79,52 @@ ssize_t
 Flash::read(unsigned addr, uint8_t *buf, size_t len)
 {
 	FWRef::Guard lg(this);
-	return at25_spi_read( flash(), addr, buf, len );
+	ssize_t got = at25_spi_read( flash(), addr, buf, len );
+	if ( got < 0 ) {
+		throw FlashError(got, "at25_spi_read failed");
+	}
+	return got;
 }
 
 ssize_t
 Flash::erase(unsigned addr, size_t len, FlashWriterProgress *progress)
 {
-	FlashWriterState state( progress );
+	FlashWriterState state( progress, FlashWriterProgress::Operation::ERASE );
 	// at25_area_erase may adjust/align addr and/or len;
 	// handled by the first execution of the progress callback
 	FWRef::Guard lg(this);
-	return at25_area_erase( flash(), addr, len, progressC, &state );
+	ssize_t status = at25_area_erase( flash(), addr, len, progressC, &state );
+	if ( status < 0 ) {
+		throw FlashError(status, "at25_area_erase failed");
+	}
+	return status;
 }
 
 ssize_t
-Flash::write(unsigned addr, uint8_t *buf, size_t len, FlashWriterProgress *progress)
+Flash::write(unsigned addr, const uint8_t *buf, size_t len, FlashWriterProgress *progress)
 {
-	FlashWriterState state( progress );
+	FlashWriterState state( progress, FlashWriterProgress::Operation::VERIFY_ERASED );
 	FWRef::Guard lg(this);
 	int flags = ( AT25_CHECK_ERASED | AT25_EXEC_PROG | AT25_CHECK_VERIFY );
-	return at25_prog( flash(), addr, buf, len, flags, progressC, &state );
+	ssize_t put = at25_prog( flash(), addr, buf, len, flags, progressC, &state );
+	if ( put < 0 ) {
+		throw FlashError(put, std::string("at25_prog failed during ") + FlashWriterProgress::toString( state.operation ) );
+	}
+	return put;
 }
 
 void
 Flash::setWP(bool on)
 {
+	int status;
 	FWRef::Guard lg(this);
 	if ( on ) {
-		if ( at25_write_dis( flash() ) ) {
-			throw std::runtime_error("Flash: set write disable failed");
+		if ( (status = at25_write_dis( flash() )) ) {
+			throw FlashError(status, "at25_write_dis failed");
 		}
 	} else {
-		if ( at25_write_ena( flash() ) ) {
-			throw std::runtime_error("Flash: set write enable failed");
+		if ( (status = at25_write_ena( flash() )) ) {
+			throw FlashError(status, "at25_write_ena failed");
 		}
 	}
 }
@@ -124,4 +138,20 @@ Flash::WriteEnable::WriteEnable(Flash *flash)
 Flash::WriteEnable::~WriteEnable()
 {
 	flash_->setWP( true );
+}
+
+const std::string &
+FlashWriterProgress::toString(Operation op) {
+	static std::string opErase        ( "ERASE"          );
+	static std::string opVerifyErased ( "VERIFY_ERASED"  );
+	static std::string opWrite        ( "WRITE"          );
+	static std::string opVerifyWritten( "VERIFY_WRITTEN" );
+	switch ( op ) {
+		case Operation::ERASE          : return opErase;
+		case Operation::VERIFY_ERASED  : return opVerifyErased;
+		case Operation::WRITE          : return opWrite;
+		case Operation::VERIFY_WRITTEN : return opVerifyWritten;
+	}
+	// avoid compiler warning about end of non-void function
+	throw std::runtime_error("internal error -- unhandled case");
 }

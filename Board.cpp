@@ -1,10 +1,12 @@
+#include <string.h>
+
+#include <scopeSup.h>
+
 #include <Board.hpp>
 #include <VersaClk.hpp>
 #include <FEC.hpp>
 #include <PGAImpl.hpp>
 #include <Max195xxADC.hpp>
-#include <scopeSup.h>
-#include <string.h>
 
 using std::make_shared;
 using std::shared_ptr;
@@ -185,6 +187,7 @@ Board::Board( FWPtr fwp, bool sim )
 // Create a temporary FWRef to lock; Board is not constructed yet!
 : BoardInterface      ( fwp, scope_open( (*FWRef(fwp))->fw_ ) ),
   BoardRef            ( this                                  ),
+  sim_                ( sim                                   ),
   acq_                ( this                                  ),
   adcClk_             ( ADCClk::create          ( this )      ),
   pga_                ( PGA::create             ( this )      ),
@@ -192,7 +195,7 @@ Board::Board( FWPtr fwp, bool sim )
   fec_                ( FEC::create             ( this )      ),
   dac_                ( make_shared<BoardDAC>   ( this, fec_ )),
   adc_                ( make_shared<Max195xxADC>( fwp  )      ),
-  sim_                ( sim                                   )
+  flash_              ( make_shared<Flash>      ( fwp  )      )
 {
 	if ( ! simulation() ) {
 		hwInit( false );

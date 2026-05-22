@@ -3,6 +3,9 @@
 #include <vector>
 #include <stdexcept>
 
+#include <scopeSup.h>
+
+#include <BoardRef.hpp>
 #include <FWComm.hpp>
 #include <LED.hpp>
 #include <PGA.hpp>
@@ -10,13 +13,12 @@
 #include <ADCClk.hpp>
 #include <AcqCtrl.hpp>
 #include <SlowDAC.hpp>
-#include <BoardRef.hpp>
-
-#include <scopeSup.h>
+#include <Flash.hpp>
 
 class Max195xxADC;
 
 typedef std::shared_ptr<Max195xxADC> ADCPtr;
+typedef std::shared_ptr<Flash>       FlashPtr;
 
 class Board;
 
@@ -24,6 +26,7 @@ struct ScopePvt;
 
 class Board : public BoardInterface, public BoardRef {
 protected:
+	bool                       sim_;
 	AcqCtrl                    acq_;
 	ADCClkPtr                  adcClk_;
 	PGAPtr                     pga_;
@@ -31,7 +34,7 @@ protected:
 	FECPtr                     fec_;
 	SlowDACPtr                 dac_;
 	ADCPtr                     adc_;
-	bool                       sim_;
+	FlashPtr                   flash_;
 
 	Board( const Board & )     = delete;
 

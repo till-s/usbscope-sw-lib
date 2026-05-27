@@ -14,11 +14,13 @@
 #include <AcqCtrl.hpp>
 #include <SlowDAC.hpp>
 #include <Flash.hpp>
+#include <ClockOut.hpp>
 
 class Max195xxADC;
 
 typedef std::shared_ptr<Max195xxADC> ADCPtr;
 typedef std::shared_ptr<Flash>       FlashPtr;
+typedef std::shared_ptr<ClockOut>    ClockOutPtr;
 
 class Board;
 
@@ -35,6 +37,7 @@ protected:
 	SlowDACPtr                 dac_;
 	ADCPtr                     adc_;
 	FlashPtr                   flash_;
+	ClockOutPtr                clockOut_;
 
 	Board( const Board & )     = delete;
 

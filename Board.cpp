@@ -195,7 +195,8 @@ Board::Board( FWPtr fwp, bool sim )
   fec_                ( FEC::create             ( this )      ),
   dac_                ( make_shared<BoardDAC>   ( this, fec_ )),
   adc_                ( make_shared<Max195xxADC>( fwp  )      ),
-  flash_              ( make_shared<Flash>      ( fwp  )      )
+  flash_              ( make_shared<Flash>      ( fwp  )      ),
+  clockOut_           ( make_shared<ClockOut>   ( this )      )
 {
 	if ( ! simulation() ) {
 		hwInit( false );

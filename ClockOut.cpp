@@ -2,12 +2,10 @@
 #include <cmath>
 
 
-ClockOut::ClockOut(BoardInterface *brd) : BoardRef( brd ) {}
-
-bool ClockOut::isPresent()
+ClockOut::ClockOut(BoardInterface *brd)
+: BoardRef( brd ),
+  present_( ! std::isnan( scope_get_clock_out_min_freq( (*this)->scope() ) ) )
 {
-	double f = scope_get_clock_out_min_freq( (*this)->scope() );
-	return ! std::isnan( f );
 }
 
 double

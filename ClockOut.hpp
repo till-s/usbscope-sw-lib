@@ -7,10 +7,11 @@
 #include <BoardRef.hpp>
 
 class ClockOut : public BoardRef {
+	bool present_;
 public:
 	ClockOut(BoardInterface *);
 
-	bool isPresent();
+	bool isPresent() const { return present_; }
 
 	double getMinFrequencyHz();
 	double getMaxFrequencyHz();

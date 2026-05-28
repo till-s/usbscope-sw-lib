@@ -7,7 +7,7 @@
 #include <system_error>
 #include <string>
 
-class FWCommError : std::system_error {
+class FWCommError : public std::system_error {
 public:
 	FWCommError(int errnoCode, const std::string &what)
 	: std::system_error( errnoCode < 0 ? -errnoCode : errnoCode, std::generic_category(), what )
@@ -15,7 +15,7 @@ public:
 	}
 };
 
-class FWCommIOError : FWCommError {
+class FWCommIOError : public FWCommError {
 public:
 	FWCommIOError(const std::string &what)
 	: FWCommError( EIO, what )

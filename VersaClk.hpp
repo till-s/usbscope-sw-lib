@@ -36,6 +36,9 @@ public:
 	virtual void
 	setFODRoute(int out, VersaClkFODRoute rte);
 
+	virtual VersaClkFODRoute
+	getFODRoute(int out);
+
 	virtual int
 	mapOut(const char *name)
 	{

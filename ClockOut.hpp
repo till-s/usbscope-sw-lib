@@ -19,5 +19,7 @@ public:
 	std::pair<double, bool> getFrequencyHz();
 	void   setFrequencyHz(double);
 
+	double getReferenceFrequencyHz();
+
 	void   setToReference();
 };

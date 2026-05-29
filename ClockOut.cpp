@@ -19,6 +19,12 @@ ClockOut::getMinFrequencyHz()
 }
 
 double
+ClockOut::getReferenceFrequencyHz()
+{
+	return scope_get_reference_freq( (*this)->scope() );
+}
+
+double
 ClockOut::getMaxFrequencyHz()
 {
 	double f = scope_get_clock_out_max_freq( (*this)->scope() );

@@ -55,3 +55,12 @@ VersaClk::setFODRoute(int out, VersaClkFODRoute rte)
 	int st = versaClkSetFODRoute( (*this)->fw_, out, rte );
 	checkStatus(st, "setFODRoute()" );
 }
+
+VersaClkFODRoute
+VersaClk::getFODRoute(int out)
+{
+	VersaClkFODRoute rte;
+	int st = versaClkGetFODRoute( (*this)->fw_, out, &rte );
+	checkStatus(st, "getFODRoute()" );
+	return rte;
+}

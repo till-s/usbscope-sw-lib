@@ -112,7 +112,7 @@ public:
 LEDv1::LEDv1(FWPtr fw)
 : FWRef( fw )
 {
-	int st = fw_reg_read( (*this)->fw_, BASE, cache_, sizeof(cache_), 0 );
+	int st = fw_reg_read( (*this)->fw_, BASE, cache_, sizeof(cache_), REG_FLG_APP );
 	if ( st < 0 ) {
 		throw std::runtime_error( string("LEDv1::LEDv1() error reading registers: ") + FWComm::what( st ) );
 	}
@@ -144,7 +144,7 @@ uint8_t  buf;
 		buf &= ~msk;
 	}
 
-	int st = fw_reg_write( (*this)->fw_, BASE + adr, &buf, 1, 0 );
+	int st = fw_reg_write( (*this)->fw_, BASE + adr, &buf, 1, REG_FLG_APP );
 	if ( st < 0 ) {
 		throw std::runtime_error( string("LEDv1::LEDv1() error writing registers: ") + FWComm::what( st ) );
 	}
